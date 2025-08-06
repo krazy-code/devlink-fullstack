@@ -1,0 +1,42 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*_test
+
+# Output of `go build`
+*.out
+
+# Dependency directories (Go modules)
+# These are typically downloaded and managed by Go, and not meant to be committed.
+vendor/
+go.sum
+
+# Go module cache
+# This directory stores downloaded modules and is managed by Go.
+# It can be quite large and is not needed in version control.
+.go/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.bak
+*~
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# macOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
+.vercel
