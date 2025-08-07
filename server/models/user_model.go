@@ -5,5 +5,5 @@ type User struct {
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	PasswordHash string `json:"passwordhash"`
-	CreatedAt    string `json:"createdat"`
+	CreatedAt    any    `json:"createdat"`
 }

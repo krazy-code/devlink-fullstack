@@ -4,6 +4,7 @@ import "github.com/krazy-code/devlink/queries"
 
 type Queries struct {
 	*queries.UserQueries
+	*queries.AuthQueries
 }
 
 func OpenDBConnection() (*Queries, error) {
@@ -14,6 +15,9 @@ func OpenDBConnection() (*Queries, error) {
 
 	return &Queries{
 		UserQueries: &queries.UserQueries{
+			Pool: pool,
+		},
+		AuthQueries: &queries.AuthQueries{
 			Pool: pool,
 		},
 	}, nil

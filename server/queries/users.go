@@ -14,13 +14,13 @@ type UserQueries struct {
 
 func (q *UserQueries) GetUsers() ([]models.User, error) {
 	query := `
-        SELECT *
-        FROM tasks
-        ORDER BY created_at DESC
+        SELECT id, name, email, password_hash, created_at::text
+        FROM users
+		ORDER BY created_at DESC
     `
 	rows, err := q.Pool.Query(context.Background(), query)
 	if err != nil {
-		return nil, fmt.Errorf("error querying tasks: %w", err)
+		return nil, fmt.Errorf("error querying users: %w", err)
 	}
 	defer rows.Close()
 
@@ -47,7 +47,7 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 	return users, nil
 }
 
-func (q *UserQueries) CreateTask(t *models.User) (int, error) {
+func (q *UserQueries) CreateUser(t *models.User) (int, error) {
 	query := `
         INSERT INTO users (name, email)
         VALUES ($1, $2)
