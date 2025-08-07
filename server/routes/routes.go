@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/krazy-code/devlink/middleware"
 	auth "github.com/krazy-code/devlink/routes/api/v1/auth"
 	users "github.com/krazy-code/devlink/routes/api/v1/users"
 )
@@ -11,6 +12,9 @@ var (
 )
 
 func InitRouter(a *fiber.App) {
+	// Middlewares
+	middleware.Middlewares(a)
+	// Group API v1
 	Prefix := "/api/v1"
 	users.UsersRoutes(a, Prefix)
 	auth.AuthRoutes(a, Prefix)
