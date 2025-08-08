@@ -40,6 +40,16 @@ func (q *AuthQueries) PostRegister(b *models.RegisterRequest) (int, error) {
 		VALUES ($1, $2, $3)
 		RETURNING id
 	`
+	queryGetUser := `
+        SELECT email
+        FROM users
+		WHERE email=$1
+    `
+	err := q.Pool.QueryRow(context.Background(), queryGetUser, b.Email).Scan()
+	if err == nil {
+		return 0, fmt.Errorf("email already exist")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(b.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, fmt.Errorf("failed to hash password")
