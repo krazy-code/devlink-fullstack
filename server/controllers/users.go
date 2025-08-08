@@ -3,58 +3,34 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/krazy-code/devlink/database"
+	"github.com/krazy-code/devlink/utils"
 )
 
 func GetUsers(c *fiber.Ctx) error {
 	db, err := database.OpenDBConnection()
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
 		})
 	}
 	users, err := db.GetUsers()
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-			"count": 0,
-			"users": nil,
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+			Data: fiber.Map{
+				"count": 0,
+				"users": nil,
+			},
 		})
 	}
 
-	// Return status 200 OK.
-	return c.JSON(fiber.Map{
-		"error": false,
-		"msg":   nil,
-		"count": len(users),
-		"users": users,
-	})
-}
-
-func CreateUser(c *fiber.Ctx) error {
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-	users, err := db.GetUsers()
-	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-			"count": 0,
-			"users": nil,
-		})
-	}
-
-	// Return status 200 OK.
-	return c.JSON(fiber.Map{
-		"error": false,
-		"msg":   nil,
-		"count": len(users),
-		"users": users,
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
+		Data: fiber.Map{
+			"count": len(users),
+			"users": users,
+		},
 	})
 }

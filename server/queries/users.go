@@ -14,7 +14,7 @@ type UserQueries struct {
 
 func (q *UserQueries) GetUsers() ([]models.User, error) {
 	query := `
-        SELECT id, name, email, password_hash, created_at::text
+        SELECT id, name, email, created_at::text
         FROM users
 		ORDER BY created_at DESC
     `
@@ -31,7 +31,6 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 			&user.Id,
 			&user.Name,
 			&user.Email,
-			&user.PasswordHash,
 			&user.CreatedAt,
 		)
 		if err != nil {
