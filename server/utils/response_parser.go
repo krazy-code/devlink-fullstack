@@ -13,14 +13,14 @@ func ResponseParser(c *fiber.Ctx, r Response) error {
 	return c.Status(r.Code).JSON(
 		Response{
 			Code:   r.Code,
-			Status: getStatusMessage(r.Code),
+			Status: GetStatusMessage(r.Code),
 			Data:   r.Data,
 			Errors: r.Errors,
 		},
 	)
 }
 
-func getStatusMessage(c int) string {
+func GetStatusMessage(c int) string {
 	statusCodeString := map[int]string{
 		// 2xx
 		200: "OK",
@@ -28,8 +28,9 @@ func getStatusMessage(c int) string {
 		204: "No Content Found",
 		// 4xx
 		400: "Bad Request",
+		401: "Unauthorized",
 		403: "Forbidden",
-		404: "Bad Request",
+		404: "Not Found",
 		// 5xx
 		500: "Internal Server Error",
 	}

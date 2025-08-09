@@ -118,3 +118,21 @@ func (q *DeveloperQueries) UpdateDeveloper(id int, b *models.Developer) error {
 
 	return nil
 }
+
+func (q *DeveloperQueries) DeleteDeveloper(id int) error {
+	query := `
+        DELETE FROM developers
+        WHERE id = $1
+    `
+
+	commandTag, err := q.Pool.Exec(context.Background(), query, id)
+	if err != nil {
+		return fmt.Errorf("error deleting developer: %w", err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("no developer found with id %d", id)
+	}
+
+	return nil
+}
