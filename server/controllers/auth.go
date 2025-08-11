@@ -44,6 +44,7 @@ func PostLogin(c *fiber.Ctx) error {
 		Code: fiber.StatusOK,
 		Data: fiber.Map{
 			"user_id": userID,
+			"token":   "access_token",
 		},
 	})
 }
