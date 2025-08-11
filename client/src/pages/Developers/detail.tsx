@@ -1,6 +1,6 @@
 import { Stack, Text } from '@mantine/core';
 import { useParams } from 'react-router';
-import useDevelopers from '../../hooks/queries/useDevelopers';
+import useDevelopers from '../../hooks/queries/useDeveloper';
 
 function DeveloperDetailPage() {
   const params = useParams();

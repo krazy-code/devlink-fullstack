@@ -10,12 +10,16 @@ export default function useAuth() {
 
   const register = useMutation({
     mutationFn: (body: AuthFormBody) =>
-      networkGenerator<AuthFormBody>(`${apiPrefix}/register`, 'post', body),
+      networkGenerator<unknown, AuthFormBody>(
+        `${apiPrefix}/register`,
+        'post',
+        body
+      ),
   });
 
   const login = useMutation({
     mutationFn: (body: AuthFormBody) =>
-      networkGenerator<AuthFormBody, { token: string }>(
+      networkGenerator<{ token: string }, AuthFormBody>(
         apiPrefix,
         'post',
         body

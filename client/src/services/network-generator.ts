@@ -6,7 +6,7 @@ export type NetworkTypes = 'get' | 'post' | 'put' | 'delete';
 export default async function networkGenerator<T = unknown, R = unknown>(
   path: string,
   type: NetworkTypes,
-  reqConfig?: T & AxiosRequestConfig<T>
-): Promise<R> {
+  reqConfig?: R & AxiosRequestConfig<R>
+): Promise<T> {
   return axiosClient[type](path, reqConfig).then((res) => res.data.data);
 }

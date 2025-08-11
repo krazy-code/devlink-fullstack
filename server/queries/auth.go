@@ -63,3 +63,33 @@ func (q *AuthQueries) PostRegister(b *models.RegisterRequest) (int, error) {
 
 	return userID, nil
 }
+
+func (q *AuthQueries) PostLogout(b *models.RegisterRequest) (int, error) {
+	query := `
+		INSERT INTO users (name,email, password_hash) 
+		VALUES ($1, $2, $3)
+		RETURNING id
+	`
+	queryGetUser := `
+        SELECT email
+        FROM users
+		WHERE email=$1
+    `
+	err := q.Pool.QueryRow(context.Background(), queryGetUser, b.Email).Scan()
+	if err == nil {
+		return 0, fmt.Errorf("email already exist")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(b.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return 0, fmt.Errorf("failed to hash password")
+	}
+
+	var userID int
+
+	if err := q.Pool.QueryRow(context.Background(), query, b.Name, b.Email, hashedPassword).Scan(&userID); err != nil {
+		return 0, fmt.Errorf("invalid email or password: %w", err)
+	}
+
+	return userID, nil
+}

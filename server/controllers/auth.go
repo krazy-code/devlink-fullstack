@@ -82,3 +82,25 @@ func PostRegister(c *fiber.Ctx) error {
 		},
 	})
 }
+
+func PostLogout(c *fiber.Ctx) error {
+	// var req models.RegisterRequest
+	// db, err := database.OpenDBConnection()
+	// if err != nil {
+	// 	return utils.ResponseParser(c, utils.Response{
+	// 		Code:   fiber.StatusInternalServerError,
+	// 		Errors: err.Error(),
+	// 	})
+	// }
+
+	// userID, err := db.PostRegister(&req)
+	// if err != nil {
+	// 	return utils.ResponseParser(c, utils.Response{
+	// 		Code:   fiber.StatusInternalServerError,
+	// 		Errors: err.Error(),
+	// 	})
+	// }
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
+	})
+}

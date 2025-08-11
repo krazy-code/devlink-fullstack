@@ -1,0 +1,8 @@
+.modalHeader {
+  border: 0;
+  margin-bottom: 0px;
+}
+
+.modalBody {
+  color: var(--mantine-color-neutral-6);
+}

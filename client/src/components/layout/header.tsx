@@ -1,3 +1,4 @@
+import useAuth from '@/hooks/queries/useAuth';
 import {
   Anchor,
   Box,
@@ -27,7 +28,6 @@ import {
   IconFingerprint,
   IconNotification,
 } from '@tabler/icons-react';
-import { Link } from 'react-router';
 import classes from './Header.module.css';
 
 const mockdata = [
@@ -64,6 +64,8 @@ const mockdata = [
 ];
 
 export default function Header() {
+  const { logout } = useAuth();
+
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
@@ -198,12 +200,15 @@ export default function Header() {
 
           <Divider my="sm" />
 
-          <Group justify="center" grow pb="xl" px="md">
+          {/* <Group justify="center" grow pb="xl" px="md">
             <Button component={Link} to="/login" variant="default">
               Log in
             </Button>
             <Button>Sign up</Button>
-          </Group>
+          </Group> */}
+          <Button color="red" onClick={() => logout.mutate()}>
+            Logout
+          </Button>
         </ScrollArea>
       </Drawer>
     </Box>
