@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	if os.Getenv("ENV") != "production" {
+	if os.Getenv("STAGE_STATUS") != "production" {
 		if err := godotenv.Load(); err != nil {
 			log.Println("No .env file found, using system environment variables")
 		}
