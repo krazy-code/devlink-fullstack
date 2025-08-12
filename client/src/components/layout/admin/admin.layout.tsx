@@ -1,6 +1,6 @@
 import { AppShell, Box, Stack } from '@mantine/core';
 import { Outlet } from 'react-router';
-import Header from '../header';
+import AdminHeader from './admin.header';
 import AdminSidebar from './admin.sidebar';
 
 function AdminLayout() {
@@ -18,7 +18,7 @@ function AdminLayout() {
         withBorder={true}
       >
         <AppShell.Header>
-          <Header />
+          <AdminHeader />
         </AppShell.Header>
         <AppShell.Navbar
           px="md"

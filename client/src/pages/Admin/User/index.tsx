@@ -23,7 +23,11 @@ function AdminUserPage() {
   );
   return (
     <>
-      <DataTable data={dataList || []} columns={columns} />
+      <DataTable
+        data={dataList || []}
+        columns={columns}
+        isLoading={queryUser.isLoading}
+      />
     </>
   );
 }

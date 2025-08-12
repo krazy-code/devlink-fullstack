@@ -5,7 +5,15 @@ function AdminSidebar() {
   return (
     <Stack>
       {navs.map((nav) => {
-        return <NavLink component={NavRouter} title={nav.text} to={nav.href} />;
+        return (
+          <NavLink
+            key={nav.href}
+            component={NavRouter}
+            title={nav.text}
+            to={nav.href}
+            label={nav.text}
+          />
+        );
       })}
     </Stack>
   );
