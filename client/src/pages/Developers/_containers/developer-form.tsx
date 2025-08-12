@@ -1,6 +1,14 @@
 import useDevelopers from '@/hooks/queries/useDeveloper';
 import type { DeveloperFormBody } from '@/services/developers/developers.types';
-import { Button, Card, Group, Modal, Stack, TextInput } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Group,
+  Modal,
+  Select,
+  Stack,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useParams } from 'react-router';
 
@@ -36,8 +44,12 @@ function DeveloperForm({
   };
 
   const handleSubmit = (values: DeveloperFormBody) => {
-    if (isEdit) updateDeveloper.mutate({ ...values, id: developerId });
-    else createDeveloper.mutate(values);
+    const body = {
+      ...values,
+      user_id: Number(values.user_id),
+    };
+    if (isEdit) updateDeveloper.mutate({ ...body, id: developerId });
+    else createDeveloper.mutate(body);
   };
 
   return (
@@ -45,23 +57,48 @@ function DeveloperForm({
       opened={opened}
       onClose={handleClose}
       title="Form Developer"
+      pos="relative"
       centered
     >
-      <Modal.Body>
-        <Card>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Stack>
-              <TextInput />
-              <Group>
-                <Button variant="outline" type="button">
-                  Close
-                </Button>
-                <Button type="submit">Create</Button>
-              </Group>
-            </Stack>
-          </form>
-        </Card>
-      </Modal.Body>
+      <Card>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Stack>
+            <Select
+              label="User"
+              placeholder="Insert User"
+              {...form.getInputProps('user_id')}
+              data={[{ value: '1', label: 'Putra' }]}
+            />
+            <TextInput
+              label="Bio"
+              placeholder="Insert Bio"
+              {...form.getInputProps('bio')}
+            />
+            <TextInput
+              label="Github"
+              placeholder="Insert Github"
+              {...form.getInputProps('github')}
+            />
+            <TextInput
+              label="Location"
+              placeholder="Insert Location"
+              {...form.getInputProps('location')}
+            />
+
+            <TextInput
+              label="Website"
+              placeholder="Insert Website"
+              {...form.getInputProps('website')}
+            />
+            <Group>
+              <Button variant="outline" type="button">
+                Close
+              </Button>
+              <Button type="submit">Create</Button>
+            </Group>
+          </Stack>
+        </form>
+      </Card>
     </Modal>
   );
 }

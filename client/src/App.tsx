@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router';
 import './App.css';
 import { routes } from './routes';
-import classes from './styles.module.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,13 +20,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <MantineProvider>
         <ModalsProvider
-          modalProps={{
-            // withCloseButton: false,
-            classNames: {
-              body: classes.modalBody,
-              header: classes.modalHeader,
-            },
-          }}
+          modalProps={
+            {
+              // withCloseButton: false,
+              // classNames: {
+              //   body: classes.modalBody,
+              //   header: classes.modalHeader,
+              // },
+            }
+          }
         >
           <RouterProvider router={routes} />
         </ModalsProvider>
