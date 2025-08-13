@@ -1,4 +1,5 @@
 import useAuth from '@/hooks/queries/useAuth';
+import { ProfileContext } from '@/services/profile/profile.provider';
 import {
   Anchor,
   Box,
@@ -12,13 +13,13 @@ import {
   HoverCard,
   ScrollArea,
   SimpleGrid,
+  Stack,
   Text,
   ThemeIcon,
   UnstyledButton,
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { MantineLogo } from '@mantinex/mantine-logo';
 import {
   IconBook,
   IconChartPie3,
@@ -28,6 +29,9 @@ import {
   IconFingerprint,
   IconNotification,
 } from '@tabler/icons-react';
+import { useContext, useEffect } from 'react';
+import { Link } from 'react-router';
+import DevlinkLogo from '../logo';
 import classes from './Header.module.css';
 
 const mockdata = [
@@ -64,7 +68,10 @@ const mockdata = [
 ];
 
 export default function Header() {
-  const { logout } = useAuth();
+  const { logout, getProfile } = useAuth();
+
+  const { profile, setProfile } = useContext(ProfileContext);
+  const profileQuery = getProfile();
 
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
@@ -89,15 +96,21 @@ export default function Header() {
     </UnstyledButton>
   ));
 
+  useEffect(() => {
+    if (profileQuery.data) {
+      setProfile(profileQuery.data);
+    }
+  }, [profileQuery.data, setProfile]);
+
   return (
     <Box pb={0}>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <MantineLogo size={30} />
+          <DevlinkLogo />
 
           <Group h="100%" gap={0} visibleFrom="sm">
             <a href="#" className={classes.link}>
-              Home
+              Feed
             </a>
             <HoverCard
               width={600}
@@ -146,18 +159,34 @@ export default function Header() {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
-            <a href="#" className={classes.link}>
+            {/* <a href="#" className={classes.link}>
               Learn
             </a>
             <a href="#" className={classes.link}>
               Academy
-            </a>
+            </a> */}
           </Group>
 
-          <Group visibleFrom="sm">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
-          </Group>
+          {profile?.name ? (
+            <Stack>
+              <Text>{profile.name}</Text>
+              <Button
+                onClick={() => {
+                  logout.mutate();
+                  setProfile(null);
+                }}
+              >
+                Log Out
+              </Button>
+            </Stack>
+          ) : (
+            <Group visibleFrom="sm">
+              <Button variant="default" component={Link} to="/login">
+                Log in
+              </Button>
+              <Button>Sign up</Button>
+            </Group>
+          )}
 
           <Burger
             opened={drawerOpened}

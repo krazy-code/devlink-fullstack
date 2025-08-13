@@ -1,6 +1,7 @@
 import { Center, LoadingOverlay, Table } from '@mantine/core';
 import { randomId } from '@mantine/hooks';
 import type React from 'react';
+import CardMain from '../card-main';
 
 export interface DataTableColumn<T> {
   accKey: keyof T;
@@ -14,7 +15,7 @@ export interface DataTableProps<T> {
 
 export function DataTable<T>({ data, columns, isLoading }: DataTableProps<T>) {
   return (
-    <>
+    <CardMain>
       <Table align="left">
         <Table.Thead>
           <Table.Tr>
@@ -40,6 +41,6 @@ export function DataTable<T>({ data, columns, isLoading }: DataTableProps<T>) {
       <Center>
         <LoadingOverlay visible={isLoading} />
       </Center>
-    </>
+    </CardMain>
   );
 }

@@ -1,4 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
+import type { ProfileItem } from '@/services/profile/profile.types';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import type { AuthFormBody } from '../../services/auth/auth.types';
 import networkGenerator from '../../services/network-generator';
@@ -33,11 +34,23 @@ export default function useAuth() {
 
   const logout = useMutation({
     mutationFn: () => networkGenerator(`${apiPrefix}/logout`, 'post'),
+    onSuccess: () => {
+      window.localStorage.clear();
+      navigate('/', { replace: true });
+    },
   });
+
+  const useGetProfile = () =>
+    useQuery({
+      queryKey: ['profile'],
+      queryFn: () =>
+        networkGenerator<ProfileItem>(`${apiPrefix}/profile`, 'get'),
+    });
 
   return {
     register,
     login,
     logout,
+    getProfile: useGetProfile,
   };
 }

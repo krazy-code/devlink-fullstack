@@ -1,4 +1,4 @@
-import { AppShell, Box, Stack } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { Outlet } from 'react-router';
 import AdminHeader from './admin.header';
 import AdminSidebar from './admin.sidebar';
@@ -13,27 +13,18 @@ function AdminLayout() {
           breakpoint: 'lg',
           collapsed: { mobile: true },
         }}
-        py="md"
+        bg="transparent"
         px={{ base: '20px', md: 'xl' }}
-        withBorder={true}
+        withBorder={false}
       >
         <AppShell.Header>
           <AdminHeader />
         </AppShell.Header>
-        <AppShell.Navbar
-          px="md"
-          bg="white"
-          withBorder
-          style={{ overflow: 'hidden' }}
-        >
-          <Stack h="100%">
-            <AdminSidebar />
-          </Stack>
+        <AppShell.Navbar p="md" bg="transparent" style={{ overflow: 'hidden' }}>
+          <AdminSidebar />
         </AppShell.Navbar>
         <AppShell.Main pos="relative">
-          <Box pt={{ base: '20px', md: '70px' }}>
-            <Outlet />
-          </Box>
+          <Outlet />
         </AppShell.Main>
       </AppShell>
       {/* <ScrollRestoration /> */}

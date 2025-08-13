@@ -1,7 +1,10 @@
-import { AppShell, Box, Stack } from '@mantine/core';
+import { AppShell, Stack } from '@mantine/core';
 import { Outlet } from 'react-router';
 import Header from './header';
-import SideBar from './side-bar';
+import SideBar from './left-side-bar';
+import RightSideBar from './right-side-bar';
+
+const sideBarWidth = 400;
 
 function Layout() {
   return (
@@ -9,44 +12,32 @@ function Layout() {
       <AppShell
         header={{ height: 100 }}
         navbar={{
-          width: 200,
+          width: sideBarWidth,
           breakpoint: 'lg',
           collapsed: { mobile: true },
         }}
-        py="md"
-        px={{ base: '20px', md: 'xl' }}
-        withBorder={true}
+        aside={{
+          width: sideBarWidth,
+          breakpoint: 'lg',
+          collapsed: { mobile: true },
+        }}
+        withBorder={false}
       >
         <AppShell.Header>
           <Header />
         </AppShell.Header>
-        <AppShell.Navbar
-          px="md"
-          bg="white"
-          withBorder
-          style={{ overflow: 'hidden' }}
-        >
-          <Stack h="100%">
-            <SideBar />
-          </Stack>
+        <AppShell.Navbar p="md" style={{ overflow: 'hidden' }}>
+          <SideBar />
         </AppShell.Navbar>
         <AppShell.Main pos="relative">
-          <Box pt={{ base: '20px', md: '70px' }}>
+          <Stack w="100%" py="md">
             <Outlet />
-          </Box>
-        </AppShell.Main>
-        <AppShell.Navbar
-          px="md"
-          bg="white"
-          withBorder
-          style={{ overflow: 'hidden', left: 'calc(100vw - 200px)', right: 0 }}
-        >
-          <Stack h="100%">
-            <SideBar />
           </Stack>
-        </AppShell.Navbar>
+        </AppShell.Main>
+        <AppShell.Aside p="md">
+          <RightSideBar />
+        </AppShell.Aside>
       </AppShell>
-      {/* <ScrollRestoration /> */}
     </>
   );
 }

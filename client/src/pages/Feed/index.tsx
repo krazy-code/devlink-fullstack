@@ -1,11 +1,7 @@
-import DeveloperPage from '../Developers';
+import ProjectList from './_containers/project.list';
 
 function MainPage() {
-  return (
-    <div>
-      <DeveloperPage />
-    </div>
-  );
+  return <ProjectList />;
 }
 
 export default MainPage;
