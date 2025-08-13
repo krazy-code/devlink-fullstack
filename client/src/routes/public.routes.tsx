@@ -1,8 +1,8 @@
 import type { RouteObject } from 'react-router';
 import Layout from '../components/layout';
-import DeveloperPage from '../pages/Developers';
-import DeveloperDetailPage from '../pages/Developers/detail';
 import MainPage from '../pages/Feed';
+import DeveloperPage from '../pages/Feed/Developers';
+import DeveloperDetailPage from '../pages/Feed/Developers/detail';
 
 export const publicRoutes: RouteObject[] = [
   {

@@ -1,4 +1,4 @@
-import { AppShell } from '@mantine/core';
+import { AppShell, Stack } from '@mantine/core';
 import { Outlet } from 'react-router';
 import AdminHeader from './admin.header';
 import AdminSidebar from './admin.sidebar';
@@ -24,7 +24,9 @@ function AdminLayout() {
           <AdminSidebar />
         </AppShell.Navbar>
         <AppShell.Main pos="relative">
-          <Outlet />
+          <Stack py="md">
+            <Outlet />
+          </Stack>
         </AppShell.Main>
       </AppShell>
       {/* <ScrollRestoration /> */}

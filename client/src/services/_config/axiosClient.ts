@@ -27,7 +27,7 @@ axiosClient.interceptors.response.use(
       if (status === 401 && !is401Handled) {
         if (!window.localStorage.getItem('refresh_token')) {
           window.localStorage.clear();
-          window.location.href = '/';
+          window.location.href = '/login';
           return Promise.reject(error);
         }
         axios
@@ -59,17 +59,17 @@ axiosClient.interceptors.response.use(
                 'response.data.errors.refresh_token'
               );
               if (refreshTokenRes === 'NOT_BLANK') {
-                window.location.href = '/';
+                window.location.href = '/login';
               }
               if (status === 401) {
                 window.localStorage.clear();
-                window.location.href = '/';
+                window.location.href = '/login';
               }
             }
           });
         is401Handled = true;
       }
-      if (status === 403) window.location.href = '/';
+      if (status === 403) window.location.href = '/login';
     }
     return Promise.reject(error);
   }
