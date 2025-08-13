@@ -11,12 +11,11 @@ var (
 )
 
 func InitRouter(a *fiber.App) {
-	// Middlewares
 	middleware.Middlewares(a)
 
-	api := a.Group("/api") // /api
+	api := a.Group("/api")
 
-	v1 := api.Group("/v1", middleware.AuthMidlleware)
+	v1 := api.Group("/v1", middleware.JWTProtected)
 
 	api_routes.UsersRoutes(v1)
 	api_routes.AuthRoutes(v1)
