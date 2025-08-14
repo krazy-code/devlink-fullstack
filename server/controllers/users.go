@@ -9,15 +9,27 @@ import (
 	"github.com/krazy-code/devlink/utils"
 )
 
-func GetUsers(c *fiber.Ctx) error {
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
+type user struct {
+	queries *database.Queries
+}
+
+func NewUser(db *database.Queries) user {
+	return user{
+		queries: db,
 	}
-	users, err := db.GetUsers()
+}
+
+func (controllers *user) Route(r fiber.Router) {
+	const prefix = "/users"
+	r.Get(prefix, controllers.GetUsers)
+	r.Get(prefix+"/:id", controllers.GetUser)
+	r.Post(prefix, controllers.CreateUser)
+	r.Put(prefix+"/:id", controllers.UpdateUser)
+	r.Delete(prefix+"/:id", controllers.DeleteUser)
+}
+
+func (controllers *user) GetUsers(c *fiber.Ctx) error {
+	users, err := controllers.queries.GetUsers()
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -38,7 +50,7 @@ func GetUsers(c *fiber.Ctx) error {
 	})
 }
 
-func GetUser(c *fiber.Ctx) error {
+func (controllers *user) GetUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -47,15 +59,7 @@ func GetUser(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-
-	user, err := db.GetUser(id)
+	user, err := controllers.queries.GetUser(id)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
@@ -69,16 +73,8 @@ func GetUser(c *fiber.Ctx) error {
 	})
 }
 
-func CreateUser(c *fiber.Ctx) error {
+func (controllers *user) CreateUser(c *fiber.Ctx) error {
 	var req models.User
-
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
 
 	if err := c.BodyParser(&req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -86,7 +82,7 @@ func CreateUser(c *fiber.Ctx) error {
 			Errors: err.Error(),
 		})
 	}
-	userId, err := db.CreateUser(&req)
+	userId, err := controllers.queries.CreateUser(&req)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -105,7 +101,7 @@ func CreateUser(c *fiber.Ctx) error {
 	})
 }
 
-func UpdateUser(c *fiber.Ctx) error {
+func (controllers *user) UpdateUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -114,14 +110,7 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-	foundedUser, err := db.GetUser(id)
+	foundedUser, err := controllers.queries.GetUser(id)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
@@ -137,7 +126,7 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := db.UpdateUser(foundedUser.Id, req); err != nil {
+	if err := controllers.queries.UpdateUser(foundedUser.Id, req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),
@@ -149,7 +138,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	})
 }
 
-func DeleteUser(c *fiber.Ctx) error {
+func (controllers *user) DeleteUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -158,14 +147,7 @@ func DeleteUser(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-	foundedUser, err := db.GetUser(id)
+	foundedUser, err := controllers.queries.GetUser(id)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
@@ -181,7 +163,7 @@ func DeleteUser(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := db.DeleteUser(foundedUser.Id); err != nil {
+	if err := controllers.queries.DeleteUser(foundedUser.Id); err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),

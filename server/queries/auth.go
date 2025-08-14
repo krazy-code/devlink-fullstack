@@ -91,5 +91,9 @@ func (q *AuthQueries) PostLogout(b *models.RegisterRequest) (int, error) {
 		return 0, fmt.Errorf("invalid email or password: %w", err)
 	}
 
+	// if err := q.Pool.QueryRow(context.Background(), query, b.Name, b.Email, hashedPassword).Scan(&userID); err != nil {
+	// 	return 0, fmt.Errorf("invalid email or password: %w", err)
+	// }
+
 	return userID, nil
 }

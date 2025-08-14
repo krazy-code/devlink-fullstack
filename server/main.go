@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/krazy-code/devlink/routes"
 	"github.com/krazy-code/devlink/utils"
 )
+
+var ctx = context.Background()
 
 func init() {
 	if os.Getenv("STAGE_STATUS") != "production" {
@@ -21,7 +24,21 @@ func init() {
 func main() {
 	config := configs.FiberConfig()
 
+	// rdb := redis.NewClient(&redis.Options{
+	// 	Addr: "localhost:6379",
+	// })
+
 	app := fiber.New(config)
+
+	// err := rdb.Set(ctx, "account:user1", 1000, 0).Err()
+	// if err != nil {
+	// 	log.Fatalf("Could not set initial account data: %v", err)
+	// }
+	// err = rdb.Set(ctx, "account:user2", 500, 0).Err()
+	// if err != nil {
+	// 	log.Fatalf("Could not set initial account data: %v", err)
+	// }
+
 	routes.InitRouter(app)
 
 	if os.Getenv("STAGE_STATUS") == "dev" {

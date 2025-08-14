@@ -3,10 +3,10 @@ package utils
 import "github.com/gofiber/fiber/v2"
 
 type Response struct {
-	Code   int         `json:"code"`
-	Status string      `json:"status"`
-	Data   interface{} `json:"data"`
-	Errors interface{} `json:"errors"`
+	Code   int    `json:"code"`
+	Status string `json:"status"`
+	Data   any    `json:"data"`
+	Errors any    `json:"errors"`
 }
 
 func ResponseParser(c *fiber.Ctx, r Response) error {

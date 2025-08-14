@@ -2,8 +2,9 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/krazy-code/devlink/controllers"
+	"github.com/krazy-code/devlink/database"
 	"github.com/krazy-code/devlink/middleware"
-	api_routes "github.com/krazy-code/devlink/routes/api_routes"
 )
 
 var (
@@ -12,14 +13,22 @@ var (
 
 func InitRouter(a *fiber.App) {
 	middleware.Middlewares(a)
+	db, err := database.DBconnection()
+	if err != nil {
+		panic(err)
+	}
+
+	authController := controllers.NewAuth(db)
+	developerController := controllers.NewDeveloper(db)
+	userController := controllers.NewUser(db)
 
 	api := a.Group("/api")
 
 	v1 := api.Group("/v1", middleware.JWTProtected)
 
-	api_routes.UsersRoutes(v1)
-	api_routes.AuthRoutes(v1)
-	api_routes.DevelopersRoutes(v1)
+	userController.Route(v1)
+	authController.Route(v1)
+	developerController.Route(v1)
 
 	api.Get("/health", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "OK"})

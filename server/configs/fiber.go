@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/krazy-code/devlink/database"
 )
 
 // FiberConfig func for configuration Fiber app.
@@ -18,4 +19,8 @@ func FiberConfig() fiber.Config {
 	return fiber.Config{
 		ReadTimeout: time.Second * time.Duration(readTimeoutSecondsCount),
 	}
+}
+
+type DbQuueris struct {
+	*database.Queries
 }

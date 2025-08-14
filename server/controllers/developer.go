@@ -9,15 +9,27 @@ import (
 	"github.com/krazy-code/devlink/utils"
 )
 
-func GetDevelopers(c *fiber.Ctx) error {
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
+type developer struct {
+	queries *database.Queries
+}
+
+func NewDeveloper(db *database.Queries) developer {
+	return developer{
+		queries: db,
 	}
-	developers, err := db.GetDevelopers()
+}
+
+func (controllers *developer) Route(r fiber.Router) {
+	const prefix = "/developers"
+	r.Get(prefix, controllers.GetDevelopers)
+	r.Get(prefix+"/:id", controllers.GetDeveloper)
+	r.Post(prefix, controllers.CreateDeveloper)
+	r.Put(prefix+"/:id", controllers.UpdateDeveloper)
+	r.Delete(prefix+"/:id", controllers.DeleteDeveloper)
+}
+
+func (controllers *developer) GetDevelopers(c *fiber.Ctx) error {
+	developers, err := controllers.queries.GetDevelopers()
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -38,7 +50,7 @@ func GetDevelopers(c *fiber.Ctx) error {
 	})
 }
 
-func GetDeveloper(c *fiber.Ctx) error {
+func (controllers *developer) GetDeveloper(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -47,15 +59,7 @@ func GetDeveloper(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-
-	developer, err := db.GetDeveloper(id)
+	developer, err := controllers.queries.GetDeveloper(id)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
@@ -69,16 +73,8 @@ func GetDeveloper(c *fiber.Ctx) error {
 	})
 }
 
-func CreateDeveloper(c *fiber.Ctx) error {
+func (controllers *developer) CreateDeveloper(c *fiber.Ctx) error {
 	var req models.Developer
-
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
 
 	if err := c.BodyParser(&req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -86,7 +82,7 @@ func CreateDeveloper(c *fiber.Ctx) error {
 			Errors: err.Error(),
 		})
 	}
-	developerId, err := db.CreateDeveloper(&req)
+	developerId, err := controllers.queries.CreateDeveloper(&req)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -105,7 +101,7 @@ func CreateDeveloper(c *fiber.Ctx) error {
 	})
 }
 
-func UpdateDeveloper(c *fiber.Ctx) error {
+func (controllers *developer) UpdateDeveloper(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -114,14 +110,7 @@ func UpdateDeveloper(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-	foundedDeveloper, err := db.GetDeveloper(id)
+	foundedDeveloper, err := controllers.queries.GetDeveloper(id)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
@@ -137,7 +126,7 @@ func UpdateDeveloper(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := db.UpdateDeveloper(foundedDeveloper.Id, req); err != nil {
+	if err := controllers.queries.UpdateDeveloper(foundedDeveloper.Id, req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),
@@ -149,7 +138,7 @@ func UpdateDeveloper(c *fiber.Ctx) error {
 	})
 }
 
-func DeleteDeveloper(c *fiber.Ctx) error {
+func (controllers *developer) DeleteDeveloper(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -158,14 +147,7 @@ func DeleteDeveloper(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-	foundedDeveloper, err := db.GetDeveloper(id)
+	foundedDeveloper, err := controllers.queries.GetDeveloper(id)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
@@ -181,7 +163,7 @@ func DeleteDeveloper(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := db.DeleteDeveloper(foundedDeveloper.Id); err != nil {
+	if err := controllers.queries.DeleteDeveloper(foundedDeveloper.Id); err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),

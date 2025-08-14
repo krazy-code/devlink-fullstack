@@ -13,7 +13,25 @@ import (
 	"github.com/krazy-code/devlink/utils"
 )
 
-func PostLogin(c *fiber.Ctx) error {
+type auth struct {
+	queries *database.Queries
+}
+
+func NewAuth(db *database.Queries) auth {
+	return auth{
+		queries: db,
+	}
+}
+
+func (controllers *auth) Route(r fiber.Router) {
+	const prefix = "/auth"
+	r.Post(prefix, controllers.PostLogin)
+	r.Post(prefix+"/register", controllers.PostRegister)
+	r.Post(prefix+"/logout", controllers.PostLogout)
+	r.Get(prefix+"/profile", controllers.GetProfile)
+}
+
+func (controllers *auth) PostLogin(c *fiber.Ctx) error {
 	var req models.LoginRequest
 	if err := c.BodyParser(&req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -21,7 +39,6 @@ func PostLogin(c *fiber.Ctx) error {
 			Errors: err.Error(),
 		})
 	}
-
 	if err := validator.New().Struct(req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusBadRequest,
@@ -29,7 +46,7 @@ func PostLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
+	userID, err := controllers.queries.PostLogin(&req)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -37,15 +54,7 @@ func PostLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	userID, err := db.PostLogin(&req)
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
-
-	user, err := db.GetUser(userID)
+	user, err := controllers.queries.GetUser(userID)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -73,18 +82,12 @@ func PostLogin(c *fiber.Ctx) error {
 	})
 }
 
-func PostRegister(c *fiber.Ctx) error {
+func (controllers *auth) PostRegister(c *fiber.Ctx) error {
 	var req models.RegisterRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
 	}
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
+
 	if err := validator.New().Struct(req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusBadRequest,
@@ -92,13 +95,23 @@ func PostRegister(c *fiber.Ctx) error {
 		})
 	}
 
-	userID, err := db.PostRegister(&req)
+	userID, err := controllers.queries.PostRegister(&req)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),
 		})
 	}
+	// devId, err := controllers.queries.CreateDeveloper(models.Developer{
+	// 	UserId: userID,
+	// })
+	// if err != nil {
+	// 	return utils.ResponseParser(c, utils.Response{
+	// 		Code:   fiber.StatusInternalServerError,
+	// 		Errors: err.Error(),
+	// 	})
+	// }
+
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusOK,
 		Data: fiber.Map{
@@ -107,13 +120,13 @@ func PostRegister(c *fiber.Ctx) error {
 	})
 }
 
-func PostLogout(c *fiber.Ctx) error {
+func (controllers *auth) PostLogout(c *fiber.Ctx) error {
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusOK,
 	})
 }
 
-func GetProfile(c *fiber.Ctx) error {
+func (controllers *auth) GetProfile(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	bearerToken := strings.Split(authHeader, " ")
 	tokenString := bearerToken[1]
@@ -124,16 +137,10 @@ func GetProfile(c *fiber.Ctx) error {
 			Errors: err.Error(),
 		})
 	}
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusInternalServerError,
-			Errors: err.Error(),
-		})
-	}
+
 	userId := int(claims["user_id"].(float64))
 
-	user, err := db.GetUser(userId)
+	user, err := controllers.queries.GetUser(userId)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusNotFound,
