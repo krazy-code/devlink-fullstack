@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/krazy-code/devlink/models"
 	"golang.org/x/crypto/bcrypt"
@@ -35,7 +36,7 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 			&user.CreatedAt,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning user row: %w", err)
+			return nil, fmt.Errorf("error scanning user arow: %w", err)
 		}
 		users = append(users, user)
 	}
@@ -47,7 +48,7 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 	return users, nil
 }
 
-func (q *UserQueries) GetUser(id int) (*models.User, error) {
+func (q *UserQueries) GetUser(id uuid.UUID) (*models.User, error) {
 	query := `
         SELECT id, name, email, created_at::text
         FROM users 
@@ -89,7 +90,7 @@ func (q *UserQueries) CreateUser(b *models.User) (int, error) {
 	return id, nil
 }
 
-func (q *UserQueries) UpdateUser(id int, b *models.User) error {
+func (q *UserQueries) UpdateUser(id uuid.UUID, b *models.User) error {
 	query := `
         UPDATE users
         SET  name = $2, email = $3, passwordhash = $4
@@ -113,7 +114,7 @@ func (q *UserQueries) UpdateUser(id int, b *models.User) error {
 	return nil
 }
 
-func (q *UserQueries) DeleteUser(id int) error {
+func (q *UserQueries) DeleteUser(id uuid.UUID) error {
 	query := `
         DELETE FROM users
         WHERE id = $1

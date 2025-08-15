@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/krazy-code/devlink/database"
 	"github.com/krazy-code/devlink/models"
 	"github.com/krazy-code/devlink/utils"
@@ -51,7 +50,7 @@ func (controllers *user) GetUsers(c *fiber.Ctx) error {
 }
 
 func (controllers *user) GetUser(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
+	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -102,7 +101,7 @@ func (controllers *user) CreateUser(c *fiber.Ctx) error {
 }
 
 func (controllers *user) UpdateUser(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
+	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
@@ -139,7 +138,7 @@ func (controllers *user) UpdateUser(c *fiber.Ctx) error {
 }
 
 func (controllers *user) DeleteUser(c *fiber.Ctx) error {
-	id, err := strconv.Atoi(c.Params("id"))
+	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,

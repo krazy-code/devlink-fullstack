@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
@@ -12,7 +11,7 @@ import (
 	"github.com/krazy-code/devlink/utils"
 )
 
-var ctx = context.Background()
+// var ctx = context.Background()
 
 func init() {
 	if os.Getenv("STAGE_STATUS") != "production" {

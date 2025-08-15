@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/krazy-code/devlink/models"
 )
@@ -14,7 +15,7 @@ type DeveloperQueries struct {
 
 func (q *DeveloperQueries) GetDevelopers() ([]models.Developer, error) {
 	query := `
-        SELECT t1.id, t2.id AS user_id, t2.email, t2.name, t1.bio, t1.location, t1.website, t1.github, t1.created_at::text
+        SELECT t1.id, t2.id AS user_id, t2.email, t2.name, t1.bio, t1.location, t1.website_url, t1.github_url, t1.created_at::text
         FROM developers AS t1
 		INNER JOIN users AS t2 ON t1.user_id = t2.id
 		ORDER BY t1.created_at DESC
@@ -40,7 +41,7 @@ func (q *DeveloperQueries) GetDevelopers() ([]models.Developer, error) {
 			&developer.CreatedAt,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning user row: %w", err)
+			return nil, fmt.Errorf("error scanning devloper row: %w", err)
 		}
 		developers = append(developers, developer)
 	}
@@ -79,13 +80,13 @@ func (q *DeveloperQueries) GetDeveloper(id int) (*models.Developer, error) {
 	return developer, nil
 }
 
-func (q *DeveloperQueries) CreateDeveloper(b *models.Developer) (int, error) {
+func (q *DeveloperQueries) CreateDeveloper(b *models.Developer) (uuid.UUID, error) {
 	query := `
-        INSERT INTO developers (user_id, bio, location, website, github)
+        INSERT INTO developers (user_id, bio, location, website_url, github_url)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
     `
-	var id int
+	var id uuid.UUID
 	err := q.Pool.QueryRow(context.Background(), query,
 		&b.UserId,
 		&b.Bio,
@@ -94,13 +95,13 @@ func (q *DeveloperQueries) CreateDeveloper(b *models.Developer) (int, error) {
 		&b.Github,
 	).Scan(&id)
 	if err != nil {
-		return 0, fmt.Errorf("error insert developers: %w", err)
+		return uuid.UUID{}, fmt.Errorf("error insert developers: %w", err)
 	}
 
 	return id, nil
 }
 
-func (q *DeveloperQueries) UpdateDeveloper(id int, b *models.Developer) error {
+func (q *DeveloperQueries) UpdateDeveloper(id uuid.UUID, b *models.Developer) error {
 	query := `
         UPDATE developers
         SET  github = $2, bio = $3, location = $4, website = $5
@@ -119,7 +120,7 @@ func (q *DeveloperQueries) UpdateDeveloper(id int, b *models.Developer) error {
 	return nil
 }
 
-func (q *DeveloperQueries) DeleteDeveloper(id int) error {
+func (q *DeveloperQueries) DeleteDeveloper(id uuid.UUID) error {
 	query := `
         DELETE FROM developers
         WHERE id = $1

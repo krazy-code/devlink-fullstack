@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/krazy-code/devlink/database"
 	"github.com/krazy-code/devlink/models"
 	"github.com/krazy-code/devlink/utils"
@@ -87,6 +88,10 @@ func (controllers *auth) PostRegister(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
 	}
+	var developerReq models.Developer
+	if err := c.BodyParser(&developerReq); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
+	}
 
 	if err := validator.New().Struct(req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -102,20 +107,19 @@ func (controllers *auth) PostRegister(c *fiber.Ctx) error {
 			Errors: err.Error(),
 		})
 	}
-	// devId, err := controllers.queries.CreateDeveloper(models.Developer{
-	// 	UserId: userID,
-	// })
-	// if err != nil {
-	// 	return utils.ResponseParser(c, utils.Response{
-	// 		Code:   fiber.StatusInternalServerError,
-	// 		Errors: err.Error(),
-	// 	})
-	// }
+	devId, err := controllers.queries.CreateDeveloper(&developerReq)
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
 
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusOK,
 		Data: fiber.Map{
 			"user_id": userID,
+			"dev_id":  devId,
 		},
 	})
 }
@@ -138,8 +142,13 @@ func (controllers *auth) GetProfile(c *fiber.Ctx) error {
 		})
 	}
 
-	userId := int(claims["user_id"].(float64))
-
+	userId, err := uuid.Parse(claims["user_id"].(string))
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusNotFound,
+			Errors: err.Error(),
+		})
+	}
 	user, err := controllers.queries.GetUser(userId)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{

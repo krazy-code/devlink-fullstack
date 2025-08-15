@@ -1,151 +1,168 @@
 package controllers
 
-// import (
-// 	"strconv"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+	"github.com/krazy-code/devlink/database"
+	"github.com/krazy-code/devlink/models"
+	"github.com/krazy-code/devlink/utils"
+)
 
-// 	"github.com/gofiber/fiber/v2"
-// 	"github.com/krazy-code/devlink/database"
-// 	"github.com/krazy-code/devlink/models"
-// 	"github.com/krazy-code/devlink/utils"
-// )
+type project struct {
+	queries *database.Queries
+}
 
-// func GetProject(c *fiber.Ctx) error {
-// 	db, err := database.OpenDBConnection()
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
-// 	developers, err := db.GetProject()
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 			Data: fiber.Map{
-// 				"count":      0,
-// 				"developers": nil,
-// 			},
-// 		})
-// 	}
+func NewProject(db *database.Queries) project {
+	return project{
+		queries: db,
+	}
+}
 
-// 	return utils.ResponseParser(c, utils.Response{
-// 		Code: fiber.StatusOK,
-// 		Data: fiber.Map{
-// 			"count":      len(developers),
-// 			"developers": developers,
-// 		},
-// 	})
-// }
+func (controllers *project) Route(r fiber.Router) {
+	const prefix = "/projects"
+	r.Get(prefix, controllers.GetProjects)
+	r.Get(prefix+"/:id", controllers.GetProject)
+	r.Post(prefix, controllers.CreateProject)
+	r.Put(prefix+"/:id", controllers.UpdateProject)
+	r.Delete(prefix+"/:id", controllers.DeleteProject)
+}
 
-// func GetDeveloper(c *fiber.Ctx) error {
-// 	id, err := strconv.Atoi(c.Params("id"))
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+func (controllers *project) GetProjects(c *fiber.Ctx) error {
+	projects, err := controllers.queries.GetProjects()
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+			Data: fiber.Map{
+				"count":    0,
+				"projects": nil,
+			},
+		})
+	}
 
-// 	db, err := database.OpenDBConnection()
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
+		Data: fiber.Map{
+			"count":    len(projects),
+			"projects": projects,
+		},
+	})
+}
 
-// 	developer, err := db.GetDeveloper(id)
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusNotFound,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+func (controllers *project) GetProject(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
 
-// 	return utils.ResponseParser(c, utils.Response{
-// 		Code: fiber.StatusOK,
-// 		Data: developer,
-// 	})
-// }
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
 
-// func CreateDeveloper(c *fiber.Ctx) error {
-// 	var req models.Developer
+	project, err := controllers.queries.GetProject(id)
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusNotFound,
+			Errors: err.Error(),
+		})
+	}
 
-// 	db, err := database.OpenDBConnection()
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
+		Data: project,
+	})
+}
 
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusBadRequest,
-// 			Errors: err.Error(),
-// 		})
-// 	}
-// 	developerId, err := db.CreateDeveloper(&req)
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 			Data: fiber.Map{
-// 				"developer_id": developerId,
-// 			},
-// 		})
-// 	}
+func (controllers *project) CreateProject(c *fiber.Ctx) error {
+	var req models.Project
 
-// 	return utils.ResponseParser(c, utils.Response{
-// 		Code: fiber.StatusCreated,
-// 		Data: fiber.Map{
-// 			"developer_id": developerId,
-// 		},
-// 	})
-// }
+	if err := c.BodyParser(&req); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusBadRequest,
+			Errors: err.Error(),
+		})
+	}
+	projectId, err := controllers.queries.CreateProject(&req)
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+			Data: fiber.Map{
+				"project_id": projectId,
+			},
+		})
+	}
 
-// func UpdateDeveloper(c *fiber.Ctx) error {
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusCreated,
+		Data: fiber.Map{
+			"project_id": projectId,
+		},
+	})
+}
 
-// 	id, err := strconv.Atoi(c.Params("id"))
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+func (controllers *project) UpdateProject(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
+	foundedProject, err := controllers.queries.GetProject(id)
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusNotFound,
+			Errors: err.Error(),
+		})
+	}
 
-// 	db, err := database.OpenDBConnection()
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
-// 	foundedDeveloper, err := db.GetDeveloper(id)
-// 	if err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusNotFound,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+	req := &models.Project{}
+	if err := c.BodyParser(req); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusBadRequest,
+			Errors: err.Error(),
+		})
+	}
 
-// 	req := &models.Developer{}
-// 	if err := c.BodyParser(req); err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusBadRequest,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+	if err := controllers.queries.UpdateProject(foundedProject.Id, req); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
 
-// 	if err := db.UpdateDeveloper(foundedDeveloper.Id, req); err != nil {
-// 		return utils.ResponseParser(c, utils.Response{
-// 			Code:   fiber.StatusInternalServerError,
-// 			Errors: err.Error(),
-// 		})
-// 	}
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
+	})
+}
 
-// 	return utils.ResponseParser(c, utils.Response{
-// 		Code: fiber.StatusOK,
-// 	})
-// }
+func (controllers *project) DeleteProject(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
+
+	foundedProject, err := controllers.queries.GetProject(id)
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusNotFound,
+			Errors: err.Error(),
+		})
+	}
+
+	if err := controllers.queries.DeleteProject(foundedProject.Id); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
+
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusNoContent,
+	})
+}

@@ -13,7 +13,8 @@ var (
 
 func InitRouter(a *fiber.App) {
 	middleware.Middlewares(a)
-	db, err := database.DBconnection()
+
+	db, err := database.OpenDBConnection()
 	if err != nil {
 		panic(err)
 	}
@@ -21,6 +22,7 @@ func InitRouter(a *fiber.App) {
 	authController := controllers.NewAuth(db)
 	developerController := controllers.NewDeveloper(db)
 	userController := controllers.NewUser(db)
+	projectController := controllers.NewProject(db)
 
 	api := a.Group("/api")
 
@@ -29,6 +31,7 @@ func InitRouter(a *fiber.App) {
 	userController.Route(v1)
 	authController.Route(v1)
 	developerController.Route(v1)
+	projectController.Route(v1)
 
 	api.Get("/health", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "OK"})
