@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import axiosClient from './_config/axiosClient';
+import axiosClient from './axiosClient';
 
 export type NetworkTypes = 'get' | 'post' | 'put' | 'delete';
 

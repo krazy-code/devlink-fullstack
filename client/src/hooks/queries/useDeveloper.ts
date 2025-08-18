@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import networkGenerator from '../../services/_config/network-generator';
 import type {
   DeveloperFormBody,
   DeveloperTypeItem,
   GetDeveloperResItem,
 } from '../../services/developers/developers.types';
-import networkGenerator from '../../services/network-generator';
 
 const apiPrefix = '/developers';
 

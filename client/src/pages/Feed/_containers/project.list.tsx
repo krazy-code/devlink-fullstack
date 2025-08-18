@@ -1,19 +1,36 @@
 import CardMain from '@/components/card-main';
 import useProject from '@/hooks/queries/useProject';
-import { Text, Title } from '@mantine/core';
+import { Stack } from '@mantine/core';
+import ProjectItem from './project.item';
 
 function ProjectList() {
-  const { listProject } = useProject();
+  const { listProject, likeProject } = useProject();
   const queryProject = listProject();
   const dataList = queryProject?.data?.projects || [];
+
   return (
     <CardMain>
-      <Title>List Project</Title>
-      {dataList.map((item) => (
-        <CardMain key={item.id}>
-          <Text>{item.title}</Text>
-        </CardMain>
-      ))}
+      <Stack>
+        {dataList.map((item) => {
+          return (
+            <ProjectItem
+              key={item.id}
+              project={item}
+              isLike={
+                typeof likeProject.context?.action === 'number'
+                  ? likeProject.context.action
+                  : 0
+              }
+              handleClickLike={() =>
+                likeProject.mutate({
+                  id: item.id,
+                  action: likeProject.context?.action === 0 ? 1 : 0,
+                })
+              }
+            />
+          );
+        })}
+      </Stack>
     </CardMain>
   );
 }

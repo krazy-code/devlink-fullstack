@@ -1,8 +1,8 @@
 import type { ProfileItem } from '@/services/profile/profile.types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import networkGenerator from '../../services/_config/network-generator';
 import type { AuthFormBody } from '../../services/auth/auth.types';
-import networkGenerator from '../../services/network-generator';
 
 const apiPrefix = '/auth';
 

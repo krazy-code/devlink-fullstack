@@ -1,6 +1,7 @@
-import networkGenerator from '@/services/network-generator';
+import networkGenerator from '@/services/_config/network-generator';
 import type {
   GetProjectResItem,
+  LikeProjectBody,
   ProjectFormBody,
   ProjectTypeItem,
 } from '@/services/projects/projects.types';
@@ -49,11 +50,30 @@ export default function useProject() {
       ),
   });
 
+  const likeProject = useMutation({
+    mutationFn: ({ id, action }: LikeProjectBody & { id: number | string }) =>
+      networkGenerator<GetProjectResItem, LikeProjectBody>(
+        `${apiPrefix}/${id}/like`,
+        'put',
+        { action }
+      ),
+    onSettled() {
+      // data, error, variables, context
+    },
+    onMutate({ action }) {
+      return { action };
+    },
+    onError(_, { action }) {
+      return { action: !action ? 1 : 0 };
+    },
+  });
+
   return {
     listProject: useListProject,
     detailProject: useDetailProject,
     createProject,
     updateProject,
     deleteProject,
+    likeProject,
   };
 }

@@ -6,6 +6,7 @@ export type ProjectTypeItem = {
   tech_stacks: string;
   title: string;
   user_id: string;
+  user_name: string;
 };
 
 export interface GetProjectResItem {
@@ -19,4 +20,7 @@ export type ProjectFormBody = {
   github: string;
   location: string;
   website: string;
+};
+export type LikeProjectBody = {
+  action: 1 | 0;
 };

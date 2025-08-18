@@ -7,7 +7,7 @@ interface CardMainProps extends CardProps {
 
 function CardMain({ children, ...props }: CardMainProps) {
   return (
-    <Card withBorder radius="lg" bg="white" {...props}>
+    <Card withBorder radius="lg" bg="white" ta="start" {...props}>
       {children}
     </Card>
   );

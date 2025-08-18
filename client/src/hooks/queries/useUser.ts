@@ -1,6 +1,6 @@
 import type { GetUserResItem } from '@/services/users/users.type';
 import { useQuery } from '@tanstack/react-query';
-import networkGenerator from '../../services/network-generator';
+import networkGenerator from '../../services/_config/network-generator';
 
 const apiPrefix = '/users';
 
