@@ -48,22 +48,30 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 	return users, nil
 }
 
-func (q *UserQueries) GetUser(id uuid.UUID) (*models.User, error) {
+func (q *UserQueries) GetUser(id uuid.UUID) (*models.UserDetail, error) {
 	query := `
-        SELECT id, name, email, created_at::text
-        FROM users 
-		WHERE id = $1
+        SELECT t1.id, t1.name, t1.email, 
+		t2.github_url, t2.bio, t2.website_url,
+		t2.linkedin_url, t2.location, t1.created_at::text
+        FROM users as t1 
+		INNER JOIN developers as t2 ON t2.user_id = t1.id
+		WHERE t1.id = $1
     `
 
-	user := &models.User{}
+	user := &models.UserDetail{}
 	err := q.Pool.QueryRow(context.Background(), query, id).Scan(
 		&user.Id,
 		&user.Name,
 		&user.Email,
+		&user.GithubURL,
+		&user.Bio,
+		&user.WebsiteURL,
+		&user.LinkedinURL,
+		&user.Location,
 		&user.CreatedAt,
 	)
 	if err != nil {
-		return &models.User{}, fmt.Errorf("error querying user: %w", err)
+		return &models.UserDetail{}, fmt.Errorf("error querying user: %w", err)
 	}
 	return user, nil
 }

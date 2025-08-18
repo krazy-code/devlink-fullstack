@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/krazy-code/devlink/database"
@@ -24,6 +26,7 @@ func (controllers *project) Route(r fiber.Router) {
 	r.Get(prefix+"/:id", controllers.GetProject)
 	r.Post(prefix, controllers.CreateProject)
 	r.Put(prefix+"/:id", controllers.UpdateProject)
+	r.Put(prefix+"/:id/like", controllers.LikeProject)
 	r.Delete(prefix+"/:id", controllers.DeleteProject)
 }
 
@@ -164,5 +167,35 @@ func (controllers *project) DeleteProject(c *fiber.Ctx) error {
 
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusNoContent,
+	})
+}
+
+func (controllers *project) LikeProject(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	var req models.LikeProject
+
+	if err := c.BodyParser(&req); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusBadRequest,
+			Errors: err.Error(),
+		})
+	}
+	log.Printf("req: %v", &req)
+	if err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+	}
+
+	if err := controllers.queries.LikeProject(id); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusBadRequest,
+			Errors: err.Error(),
+		})
+	}
+
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
 	})
 }

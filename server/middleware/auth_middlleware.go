@@ -3,6 +3,7 @@ package middleware
 import (
 	"os"
 	"slices"
+	"strings"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -22,6 +23,30 @@ func JWTProtected(c *fiber.Ctx) error {
 				Code:   fiber.StatusUnauthorized,
 				Errors: err.Error(),
 			})
+		},
+
+		SuccessHandler: func(c *fiber.Ctx) error {
+			authHeader := c.Get("Authorization")
+			bearerToken := strings.Split(authHeader, " ")
+			tokenString := bearerToken[1]
+
+			if tokenString == "null" {
+				return utils.ResponseParser(c, utils.Response{
+					Code: fiber.StatusOK,
+					Data: nil,
+				})
+			}
+
+			claims, err := utils.VerifyToken(tokenString)
+			if err != nil {
+				return utils.ResponseParser(c, utils.Response{
+					Code:   fiber.StatusUnauthorized,
+					Errors: err.Error(),
+				})
+			}
+			c.Locals("access_token_claims", claims)
+			c.Next()
+			return nil
 		},
 	})(c)
 }

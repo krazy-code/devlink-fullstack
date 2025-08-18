@@ -1,5 +1,7 @@
 package models
 
+import "github.com/golang-jwt/jwt/v5"
+
 type LoginRequest struct {
 	Email    string `json:"email" validate:"required"`
 	Password string `json:"password" validate:"required"`
@@ -13,4 +15,8 @@ type RegisterRequest struct {
 	Location string `json:"location"`
 	Website  string `json:"website"`
 	Github   string `json:"github"`
+}
+
+type LogoutRequest struct {
+	AccessTokenClaims jwt.MapClaims
 }

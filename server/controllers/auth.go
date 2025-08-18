@@ -68,10 +68,17 @@ func (controllers *auth) PostLogin(c *fiber.Ctx) error {
 		"admin":   true,
 		"exp":     time.Now().Add(time.Hour * 72).Unix(),
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	t, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if err := controllers.queries.UpdateAccessToken(userID, t); err != nil {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
+
 	}
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusOK,
@@ -88,10 +95,10 @@ func (controllers *auth) PostRegister(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
 	}
-	var developerReq models.Developer
-	if err := c.BodyParser(&developerReq); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
-	}
+	// var developerReq models.Developer
+	// if err := c.BodyParser(&developerReq); err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
+	// }
 
 	if err := validator.New().Struct(req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
@@ -107,26 +114,38 @@ func (controllers *auth) PostRegister(c *fiber.Ctx) error {
 			Errors: err.Error(),
 		})
 	}
-	devId, err := controllers.queries.CreateDeveloper(&developerReq)
+	// devId, err := controllers.queries.CreateDeveloper(&developerReq)
+	// if err != nil {
+	// 	return utils.ResponseParser(c, utils.Response{
+	// 		Code:   fiber.StatusInternalServerError,
+	// 		Errors: err.Error(),
+	// 	})
+	// }
+
+	return utils.ResponseParser(c, utils.Response{
+		Code: fiber.StatusOK,
+		Data: fiber.Map{
+			"user_id": userID,
+			// "dev_id":  devId,
+		},
+	})
+}
+
+func (controllers *auth) PostLogout(c *fiber.Ctx) error {
+	request := models.LogoutRequest{}
+	request.AccessTokenClaims = c.Locals("access_token_claims").(jwt.MapClaims)
+	userId, err := controllers.queries.PostLogout(request)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),
 		})
 	}
-
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusOK,
 		Data: fiber.Map{
-			"user_id": userID,
-			"dev_id":  devId,
+			"user_id": userId,
 		},
-	})
-}
-
-func (controllers *auth) PostLogout(c *fiber.Ctx) error {
-	return utils.ResponseParser(c, utils.Response{
-		Code: fiber.StatusOK,
 	})
 }
 

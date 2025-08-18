@@ -5,9 +5,14 @@ import "github.com/google/uuid"
 type Project struct {
 	Id          uuid.UUID `json:"id"`
 	UserId      uuid.UUID `json:"user_id"`
+	UserName    string    `json:"user_name"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Techstacks  string    `json:"tech_stacks"`
 	ProjectURL  string    `json:"project_url"`
 	CreatedAt   string    `json:"created_at"`
+}
+
+type LikeProject struct {
+	Action int `json:"action"`
 }

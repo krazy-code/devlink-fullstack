@@ -65,36 +65,25 @@ func (q *AuthQueries) PostRegister(b *models.RegisterRequest) (uuid.UUID, error)
 	return userID, nil
 }
 
-func (q *AuthQueries) PostLogout(b *models.RegisterRequest) (int, error) {
-	query := `
-		INSERT INTO users (name,email, password_hash) 
-		VALUES ($1, $2, $3)
-		RETURNING id
-	`
-	queryGetUser := `
-        SELECT email
-        FROM users
-		WHERE email=$1
-    `
-	err := q.Pool.QueryRow(context.Background(), queryGetUser, b.Email).Scan()
-	if err == nil {
-		return 0, fmt.Errorf("email already exist")
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(b.Password), bcrypt.DefaultCost)
+func (q *AuthQueries) PostLogout(b models.LogoutRequest) (uuid.UUID, error) {
+	userID, err := uuid.Parse(b.AccessTokenClaims["user_id"].(string))
 	if err != nil {
-		return 0, fmt.Errorf("failed to hash password")
+		return uuid.UUID{}, fmt.Errorf("logout error: %v", err)
 	}
 
-	var userID int
-
-	if err := q.Pool.QueryRow(context.Background(), query, b.Name, b.Email, hashedPassword).Scan(&userID); err != nil {
-		return 0, fmt.Errorf("invalid email or password: %w", err)
+	if err := q.UpdateAccessToken(userID, ""); err != nil {
+		return uuid.UUID{}, fmt.Errorf("logout error: %v", err)
 	}
-
-	// if err := q.Pool.QueryRow(context.Background(), query, b.Name, b.Email, hashedPassword).Scan(&userID); err != nil {
-	// 	return 0, fmt.Errorf("invalid email or password: %w", err)
-	// }
 
 	return userID, nil
+}
+
+func (q *AuthQueries) UpdateAccessToken(id uuid.UUID, token string) (err error) {
+	query := `
+		UPDATE users 
+		SET token = $2 
+		WHERE id = $1
+	`
+	_, err = q.Pool.Exec(context.Background(), query, id, token)
+	return
 }

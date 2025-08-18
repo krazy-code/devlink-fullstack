@@ -15,9 +15,10 @@ type ProjectQueries struct {
 
 func (q *ProjectQueries) GetProjects() ([]models.Project, error) {
 	query := `
-        SELECT id, user_id, title, description, tech_stack, project_url, created_at::text
-        FROM projects AS t1
-		ORDER BY created_at DESC
+        SELECT t1.id, t1.user_id,t2.name as user_name, t1.title, t1.description, t1.tech_stack, t1.project_url, t1.created_at::text
+        FROM projects as t1
+		INNER JOIN users as t2 ON t2.id = t1.user_id
+		ORDER BY t1.created_at DESC
     `
 	rows, err := q.Pool.Query(context.Background(), query)
 	if err != nil {
@@ -31,6 +32,7 @@ func (q *ProjectQueries) GetProjects() ([]models.Project, error) {
 		err := rows.Scan(
 			&project.Id,
 			&project.UserId,
+			&project.UserName,
 			&project.Title,
 			&project.Description,
 			&project.Techstacks,
@@ -52,11 +54,9 @@ func (q *ProjectQueries) GetProjects() ([]models.Project, error) {
 
 func (q *ProjectQueries) GetProject(id uuid.UUID) (*models.Project, error) {
 	query := `
-        SELECT t1.id, t2.id AS user_id, t2.email, t2.name, t1.bio, t1.location, t1.website, t1.github, t1.created_at::text
+        SELECT id, user_id, title, description, project_url, tech_stacks, title, t1.created_at::text
         FROM projects AS t1
-		INNER JOIN users AS t2 ON t1.user_id = t2.id
-		WHERE t1.id = $1
-		ORDER BY t1.created_at DESC
+		WHERE id = $1
     `
 
 	project := &models.Project{}
@@ -129,6 +129,24 @@ func (q *ProjectQueries) DeleteProject(id uuid.UUID) error {
 	if commandTag.RowsAffected() == 0 {
 		return fmt.Errorf("no developer found with id %d", id)
 	}
+
+	return nil
+}
+
+func (q *ProjectQueries) LikeProject(id uuid.UUID) error {
+	// query := `
+	//     DELETE FROM projects
+	//     WHERE id = $1
+	// `
+
+	// commandTag, err := q.Pool.Exec(context.Background(), query, id)
+	// if err != nil {
+	// 	return fmt.Errorf("error deleting developer: %w", err)
+	// }
+
+	// if commandTag.RowsAffected() == 0 {
+	// 	return fmt.Errorf("no developer found with id %d", id)
+	// }
 
 	return nil
 }

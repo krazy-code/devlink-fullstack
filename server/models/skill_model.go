@@ -1,11 +1,9 @@
 package models
 
-type Skill struct {
-	Id          int    `json:"id"`
-	DeveloperId int    `json:"developer_id"`
-	Name        string `json:"name"`
-}
+import "github.com/google/uuid"
 
-// - id (uuid)
-// - developer_id (foreign key -> Developer.id)
-// - name (string)
+type Skill struct {
+	Id     uuid.UUID `json:"id"`
+	UserId uuid.UUID `json:"user_id"`
+	Name   string    `json:"name"`
+}

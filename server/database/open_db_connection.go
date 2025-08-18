@@ -9,6 +9,7 @@ type Queries struct {
 	*queries.AuthQueries
 	*queries.DeveloperQueries
 	*queries.ProjectQueries
+	*queries.SkillQueries
 }
 
 func OpenDBConnection() (*Queries, error) {
@@ -37,6 +38,9 @@ func OpenDBConnection() (*Queries, error) {
 			Pool: pool,
 		},
 		ProjectQueries: &queries.ProjectQueries{
+			Pool: pool,
+		},
+		SkillQueries: &queries.SkillQueries{
 			Pool: pool,
 		},
 	}, nil
