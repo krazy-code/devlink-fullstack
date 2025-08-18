@@ -1,5 +1,5 @@
 import { AppShell, Stack } from '@mantine/core';
-import { Outlet } from 'react-router';
+import { Outlet } from '@tanstack/react-router';
 import Header from './header';
 import SideBar from './left-side-bar';
 import RightSideBar from './right-side-bar';

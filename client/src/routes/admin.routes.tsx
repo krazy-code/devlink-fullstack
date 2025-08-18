@@ -1,15 +1,25 @@
 import AdminLayout from '@/components/layout/admin/admin.layout';
 import AdminDeveloperPage from '@/pages/Admin/Developer';
 import AdminUserPage from '@/pages/Admin/User';
-import type { RouteObject } from 'react-router';
+import { createRoute } from '@tanstack/react-router';
+import { rootRoute } from './root-route';
 
-export const adminRoutes: RouteObject[] = [
-  {
-    path: '/admin',
-    element: <AdminLayout />,
-    children: [
-      { path: 'user', element: <AdminUserPage /> },
-      { path: 'developer', element: <AdminDeveloperPage /> },
-    ],
-  },
-];
+const adminPage = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: AdminLayout,
+});
+
+const adminUserPage = createRoute({
+  getParentRoute: () => adminPage,
+  path: '/user',
+  component: AdminUserPage,
+});
+
+const adminDeveloperPage = createRoute({
+  getParentRoute: () => adminPage,
+  path: '/developer',
+  component: AdminDeveloperPage,
+});
+
+export const adminPages = [adminPage, adminUserPage, adminDeveloperPage];

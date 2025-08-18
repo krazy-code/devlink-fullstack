@@ -1,6 +1,6 @@
 import DevlinkLogo from '@/components/logo';
 import { Box, Button, Group } from '@mantine/core';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import classes from '../Header.module.css';
 
 export default function AdminHeader() {

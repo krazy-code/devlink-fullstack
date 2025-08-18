@@ -1,7 +1,7 @@
 import ProjectList from './_containers/project.list';
 
-function MainPage() {
+function FeedPage() {
   return <ProjectList />;
 }
 
-export default MainPage;
+export default FeedPage;

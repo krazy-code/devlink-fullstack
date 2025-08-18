@@ -3,7 +3,14 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    // tanstackRouter({
+    //   target: 'react',
+    //   autoCodeSplitting: true,
+    //   generatedRouteTree: 'routeTree.gen',
+    // }),
+    react(),
+  ],
   resolve: {
     alias: {
       '@': '/src',

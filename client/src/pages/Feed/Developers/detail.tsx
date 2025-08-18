@@ -1,10 +1,12 @@
+import useDevelopers from '@/hooks/queries/useDeveloper';
 import { Stack, Text } from '@mantine/core';
-import { useParams } from 'react-router';
-import useDevelopers from '../../../hooks/queries/useDeveloper';
+import { useParams } from '@tanstack/react-router';
 
 function DeveloperDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
+  const id = useParams({
+    from: '/developer/$id',
+    select: (params) => params.id,
+  });
 
   const { detailDeveloper } = useDevelopers();
 

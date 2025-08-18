@@ -29,8 +29,8 @@ import {
   IconFingerprint,
   IconNotification,
 } from '@tabler/icons-react';
+import { Link } from '@tanstack/react-router';
 import { useContext, useEffect } from 'react';
-import { Link } from 'react-router';
 import DevlinkLogo from '../logo';
 import classes from './Header.module.css';
 
@@ -109,9 +109,12 @@ export default function Header() {
           <DevlinkLogo />
 
           <Group h="100%" gap={0} visibleFrom="sm">
-            <a href="#" className={classes.link}>
+            <Anchor component={Link} href="/feed" className={classes.link}>
               Feed
-            </a>
+            </Anchor>
+            <Anchor component={Link} href="/developer" className={classes.link}>
+              Developer
+            </Anchor>
             <HoverCard
               width={600}
               position="bottom"
@@ -229,12 +232,12 @@ export default function Header() {
 
           <Divider my="sm" />
 
-          {/* <Group justify="center" grow pb="xl" px="md">
+          <Group justify="center" grow pb="xl" px="md">
             <Button component={Link} to="/login" variant="default">
               Log in
             </Button>
             <Button>Sign up</Button>
-          </Group> */}
+          </Group>
           <Button color="red" onClick={() => logout.mutate()}>
             Logout
           </Button>

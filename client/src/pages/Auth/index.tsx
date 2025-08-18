@@ -11,7 +11,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import useAuth from '../../hooks/queries/useAuth';
 import type { AuthFormBody } from '../../services/auth/auth.types';
 

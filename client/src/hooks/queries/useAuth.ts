@@ -1,6 +1,6 @@
 import type { ProfileItem } from '@/services/profile/profile.types';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router';
+import { useNavigate } from '@tanstack/react-router';
 import type { AuthFormBody } from '../../services/auth/auth.types';
 import networkGenerator from '../../services/network-generator';
 
@@ -28,7 +28,7 @@ export default function useAuth() {
     onSuccess: (res) => {
       const token = res.token;
       window.localStorage.setItem('token', token);
-      navigate('/', { replace: true });
+      navigate({ to: '/feed', replace: true });
     },
   });
 
@@ -36,7 +36,7 @@ export default function useAuth() {
     mutationFn: () => networkGenerator(`${apiPrefix}/logout`, 'post'),
     onSuccess: () => {
       window.localStorage.clear();
-      navigate('/', { replace: true });
+      navigate({ to: '/', replace: true });
     },
   });
 

@@ -1,6 +1,6 @@
 import CardMain from '@/components/card-main';
 import { NavLink, Stack } from '@mantine/core';
-import { NavLink as NavRouter } from 'react-router';
+import { Link as NavRouter } from '@tanstack/react-router';
 
 function AdminSidebar() {
   return (

@@ -17,7 +17,7 @@ export default function useDeveloper() {
 
   const useDetailDeveloper = (id: string | number) =>
     useQuery({
-      queryKey: ['developers'],
+      queryKey: ['developers', id],
       queryFn: () =>
         networkGenerator<DeveloperTypeItem>(`${apiPrefix}/${id}`, 'get'),
     });

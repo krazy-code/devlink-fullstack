@@ -1,11 +1,13 @@
-import { createBrowserRouter } from 'react-router';
-import AuthPage from '../pages/Auth';
-import { adminRoutes } from './admin.routes';
-import { publicRoutes } from './public.routes';
+import { createRouter } from '@tanstack/react-router';
+import { adminPages } from './admin.routes';
+import { authPages } from './auth.routes';
+import { feedPages } from './feed.routes';
+import { rootRoute } from './root-route';
 
-export const routes = createBrowserRouter([
-  { path: '/login', element: <AuthPage type="login" /> },
-  { path: '/register', element: <AuthPage type="register" /> },
-  ...adminRoutes,
-  ...publicRoutes,
+const routeTree = rootRoute.addChildren([
+  ...adminPages,
+  ...feedPages,
+  ...authPages,
 ]);
+
+export const router = createRouter({ routeTree });

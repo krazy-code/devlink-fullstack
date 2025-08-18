@@ -11,7 +11,6 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useParams } from 'react-router';
 
 interface AdminDeveloperFormProps {
   isEdit?: boolean;
@@ -26,8 +25,8 @@ function AdminDeveloperForm({
 }: AdminDeveloperFormProps) {
   const { createDeveloper, updateDeveloper } = useDevelopers();
 
-  const params = useParams();
-  const developerId = params.id as string;
+  // const params = useParams();
+  const developerId = '1';
 
   const form = useForm<DeveloperFormBody>({
     initialValues: {
