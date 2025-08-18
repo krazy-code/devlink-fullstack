@@ -20,6 +20,25 @@ func (q *DeveloperQueries) GetDevelopers() ([]models.Developer, error) {
 		INNER JOIN users AS t2 ON t1.user_id = t2.id
 		ORDER BY t1.created_at DESC
     `
+	// whereClause := "\nWHERE true"
+	// whereValues := []any{}
+	// if len(data.Name) > 0 {
+	// 	whereClause += " AND name LIKE ?"
+	// 	whereValues = append(whereValues, helper.MySQLContains(data.Name))
+	// }
+	// if len(data.AgentID) > 0 {
+	// 	whereClause += " AND agent_id LIKE ?"
+	// 	whereValues = append(whereValues, helper.MySQLContains(data.AgentID))
+	// }
+	// if len(data.Username) > 0 {
+	// 	whereClause += " AND username LIKE ?"
+	// 	whereValues = append(whereValues, helper.MySQLContains(data.Username))
+	// }
+	// sql += whereClause
+	// sql += `
+	// ORDER BY id DESC
+	// LIMIT ?
+	// OFFSET ?`
 	rows, err := q.Pool.Query(context.Background(), query)
 	if err != nil {
 		return nil, fmt.Errorf("error querying developers: %w", err)

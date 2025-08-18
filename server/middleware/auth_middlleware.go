@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"os"
+	"slices"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -13,13 +14,8 @@ func JWTProtected(c *fiber.Ctx) error {
 		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("JWT_SECRET"))},
 		ContextKey: "jwt",
 		Filter: func(c *fiber.Ctx) bool {
-			excludedPaths := []string{"/api/v1/auth", "/api/v1/auth/register"}
-			for _, path := range excludedPaths {
-				if c.Path() == path {
-					return true
-				}
-			}
-			return false
+			excludedPaths := []string{"/api/v1/auth", "/api/v1/auth/register", "/api/v1/auth/profile"}
+			return slices.Contains(excludedPaths, c.Path())
 		},
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			return utils.ResponseParser(c, utils.Response{

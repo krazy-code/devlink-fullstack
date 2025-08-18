@@ -134,6 +134,14 @@ func (controllers *auth) GetProfile(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	bearerToken := strings.Split(authHeader, " ")
 	tokenString := bearerToken[1]
+
+	if tokenString == "null" {
+		return utils.ResponseParser(c, utils.Response{
+			Code: fiber.StatusOK,
+			Data: nil,
+		})
+	}
+
 	claims, err := utils.VerifyToken(tokenString)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
