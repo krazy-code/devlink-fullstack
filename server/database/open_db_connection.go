@@ -20,7 +20,7 @@ func OpenDBConnection() (*Queries, error) {
 	}
 
 	// ... (inside main or a function)
-	// sqlScript, err := os.ReadFile("database/migrations/002_create_follows.sql")
+	// sqlScript, err := os.ReadFile("database/migrations/003_add_profile_fields_to_users.sql")
 	// if err != nil {
 	// 	log.Fatalf("Unable to read init.sql: %v\n", err)
 	// }

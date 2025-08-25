@@ -21,8 +21,15 @@ func (controllers *testing) Route(r fiber.Router) {
 	r.Put("/testing", controllers.PutTesting)
 }
 func (controllers *testing) PutTesting(c *fiber.Ctx) error {
-	var form models.User
-	if err := c.BodyParser(&form); err != nil {
+	// var form models.User
+	// if err := c.BodyParser(&form); err != nil {
+	// 	return utils.ResponseParser(c, utils.Response{
+	// 		Code:   fiber.StatusBadRequest,
+	// 		Errors: err.Error(),
+	// 	})
+	// }
+	form, err := utils.FF[models.User](c)
+	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusBadRequest,
 			Errors: err.Error(),

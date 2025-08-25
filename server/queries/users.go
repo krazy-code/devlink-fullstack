@@ -52,7 +52,8 @@ func (q *UserQueries) GetUser(id uuid.UUID) (*models.UserDetail, error) {
 	query := `
 		SELECT t1.id, t1.name, t1.email, 
 		COALESCE(t2.github_url, ''), COALESCE(t2.bio, ''), COALESCE(t2.website_url, ''),
-		COALESCE(t2.linkedin_url, ''), COALESCE(t2.location, ''), t1.created_at::text
+		COALESCE(t2.linkedin_url, ''), COALESCE(t2.location, ''),
+		COALESCE(t1.avatar, ''), t1.created_at::text
 		FROM users as t1 
 		LEFT JOIN developers as t2 ON t2.user_id = t1.id
 		WHERE t1.id = $1
@@ -68,6 +69,7 @@ func (q *UserQueries) GetUser(id uuid.UUID) (*models.UserDetail, error) {
 		&user.WebsiteURL,
 		&user.LinkedinURL,
 		&user.Location,
+		&user.Avatar,
 		&user.CreatedAt,
 	)
 	if err != nil {
@@ -101,16 +103,16 @@ func (q *UserQueries) CreateUser(b *models.User) (int, error) {
 func (q *UserQueries) UpdateUser(id uuid.UUID, b *models.User) error {
 	query := `
         UPDATE users
-        SET  name = $2, email = $3, passwordhash = $4
+        SET  name = $2, email = $3, bio = $4, avatar = $5
         WHERE id = $1
     `
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(b.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return fmt.Errorf("failed to hash password")
-	}
+	// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(b.Password), bcrypt.DefaultCost)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to hash password")
+	// }
 
-	commandTag, err := q.Pool.Exec(context.Background(), query, id, b.Name, b.Email, hashedPassword)
+	commandTag, err := q.Pool.Exec(context.Background(), query, id, b.Name, b.Email, b.Bio, b.Avatar)
 	if err != nil {
 		return fmt.Errorf("error updating user: %w", err)
 	}

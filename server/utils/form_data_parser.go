@@ -155,9 +155,9 @@ func mapToStruct[T any](m map[string]string) (T, error) {
 	return out, nil
 }
 
-func FF[T struct{}](c *fiber.Ctx) (T, error) {
+func FF[T any](c *fiber.Ctx) (T, error) {
 	var out T
-	prod := T{}
+	var prod T
 	prodValue := reflect.ValueOf(&prod).Elem() // Get a settable Value
 	prodTag := reflect.TypeOf(out)
 	// Loop through fields by index and assign values dynamically

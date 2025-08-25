@@ -119,7 +119,6 @@ func (controllers *user) UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	req := &models.User{}
 	file, err := c.FormFile("avatar")
 	if err == nil && file != nil {
 		// Save the file or process as needed
@@ -128,13 +127,19 @@ func (controllers *user) UpdateUser(c *fiber.Ctx) error {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to save avatar"})
 		}
 		// Save file.Filename or path to DB as avatar
+	} else {
+		return utils.ResponseParser(c, utils.Response{
+			Code:   fiber.StatusInternalServerError,
+			Errors: err.Error(),
+		})
 	}
-	// if err := c.BodyParser(req); err != nil {
-	// 	return utils.ResponseParser(c, utils.Response{
-	// 		Code:   fiber.StatusBadRequest,
-	// 		Errors: err.Error(),
-	// 	})
-	// }
+	req := &models.User{
+		Name:     c.FormValue("name"),
+		Bio:      c.FormValue("bio"),
+		Email:    c.FormValue("email"),
+		Password: c.FormValue("password"),
+		Avatar:   fmt.Sprintf("/uploads/%s", file.Filename),
+	}
 
 	if err := controllers.queries.UpdateUser(foundedUser.Id, req); err != nil {
 		return utils.ResponseParser(c, utils.Response{

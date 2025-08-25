@@ -13,7 +13,7 @@ var (
 
 func InitRouter(a *fiber.App) {
 	middleware.Middlewares(a)
-
+	a.Static("/uploads", "./uploads")
 	db, err := database.OpenDBConnection()
 	if err != nil {
 		panic(err)
