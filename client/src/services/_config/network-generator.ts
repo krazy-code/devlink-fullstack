@@ -1,7 +1,13 @@
 import type { AxiosRequestConfig } from 'axios';
 import axiosClient from './axiosClient';
 
-export type NetworkTypes = 'get' | 'post' | 'put' | 'delete';
+export type NetworkTypes =
+  | 'get'
+  | 'post'
+  | 'put'
+  | 'delete'
+  | 'putForm'
+  | 'postForm';
 
 export default async function networkGenerator<T = unknown, R = unknown>(
   path: string,

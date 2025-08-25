@@ -4,7 +4,7 @@ import { useParams } from '@tanstack/react-router';
 
 function DeveloperDetailPage() {
   const id = useParams({
-    from: '/developer/$id',
+    from: '/feed-layout/developer/$id',
     select: (params) => params.id,
   });
 

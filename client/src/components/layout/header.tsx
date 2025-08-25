@@ -162,17 +162,17 @@ export default function Header() {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
-            {/* <a href="#" className={classes.link}>
-              Learn
-            </a>
-            <a href="#" className={classes.link}>
-              Academy
-            </a> */}
           </Group>
 
           {profile?.name ? (
             <Stack>
-              <Text>{profile.name}</Text>
+              <Link
+                to="/profile/$id"
+                params={{ id: profile.id }}
+                style={{ textDecoration: 'none' }}
+              >
+                <Text>{profile.name}</Text>
+              </Link>
               <Button
                 onClick={() => {
                   logout.mutate();

@@ -1,6 +1,7 @@
 import Layout from '@/components/layout';
 import FeedPage from '@/pages/Feed';
 import DeveloperPage from '@/pages/Feed/Developers';
+import ProfilePage from '@/pages/Feed/Profile';
 import LandingPage from '@/pages/Landing';
 import { createRoute } from '@tanstack/react-router';
 import { rootRoute } from './root-route';
@@ -36,10 +37,17 @@ const developerDetailPage = createRoute({
   component: DeveloperPage,
 });
 
+const profilePage = createRoute({
+  getParentRoute: () => feedLayout,
+  path: '/profile/$id',
+  component: ProfilePage,
+});
+
 export const feedPages = [
   feedLayout,
   landingPage,
   feedPage,
   developerPage,
   developerDetailPage,
+  profilePage,
 ];
