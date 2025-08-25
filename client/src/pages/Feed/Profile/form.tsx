@@ -1,7 +1,17 @@
 import useUser from '@/hooks/queries/useUser';
+import useResponse from '@/hooks/useResponse';
 import type { UserFormBody, UserTypeItem } from '@/services/users/users.type';
-import { Button, FileInput, Modal, TextInput } from '@mantine/core';
+import {
+  Button,
+  FileInput,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ProfileFormProps {
   opened: boolean;
@@ -10,6 +20,9 @@ interface ProfileFormProps {
 }
 
 function ProfileForm({ onClose, opened, user }: ProfileFormProps) {
+  const { handleSuccess, handleError } = useResponse();
+  const queryClient = useQueryClient();
+
   const form = useForm<UserFormBody>({
     initialValues: {
       name: user?.name || '',
@@ -37,9 +50,14 @@ function ProfileForm({ onClose, opened, user }: ProfileFormProps) {
     updateUser.mutate(
       { id: user?.id || '', body: formData },
       {
-        onSuccess: handleClose,
+        onSuccess: () => {
+          handleClose();
+          handleSuccess('Profile updated successfully');
+          queryClient.invalidateQueries({ queryKey: ['users', user?.id] });
+        },
         onError: (err) => {
-          console.log('Error updating user:', err);
+          console.error('Error updating user:', err);
+          handleError(err);
         },
       }
     );
@@ -53,28 +71,33 @@ function ProfileForm({ onClose, opened, user }: ProfileFormProps) {
       opened={opened}
       onClose={handleClose}
     >
+      <LoadingOverlay visible={updateUser.isPending} />
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <FileInput
-          label="Input Avatar"
-          placeholder="Input avatar"
-          {...form.getInputProps('avatar')}
-        />
-        <TextInput
-          label="Name"
-          placeholder="Insert your name"
-          {...form.getInputProps('name')}
-        />
-        <TextInput
-          label="Email"
-          placeholder="Insert your email"
-          {...form.getInputProps('email')}
-        />
-        <TextInput
-          label="Bio"
-          placeholder="Insert your bio"
-          {...form.getInputProps('bio')}
-        />
-        <Button type="submit">Save</Button>
+        <Stack>
+          <FileInput
+            label="Input Avatar"
+            placeholder="Input avatar"
+            {...form.getInputProps('avatar')}
+          />
+          <TextInput
+            label="Name"
+            placeholder="Insert your name"
+            {...form.getInputProps('name')}
+          />
+          <TextInput
+            label="Email"
+            placeholder="Insert your email"
+            {...form.getInputProps('email')}
+          />
+          <TextInput
+            label="Bio"
+            placeholder="Insert your bio"
+            {...form.getInputProps('bio')}
+          />
+          <Group align="end">
+            <Button type="submit">Save</Button>
+          </Group>
+        </Stack>
       </form>
     </Modal>
   );

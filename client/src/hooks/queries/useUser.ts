@@ -13,7 +13,7 @@ export default function useUser() {
 
   const useDetailUser = (id: string | number) =>
     useQuery({
-      queryKey: ['Users'],
+      queryKey: ['users', id],
       queryFn: () =>
         networkGenerator<UserTypeItem>(`${apiPrefix}/${id}`, 'get'),
     });

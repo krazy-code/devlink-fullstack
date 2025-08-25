@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/krazy-code/devlink/database"
 	"github.com/krazy-code/devlink/models"
@@ -28,14 +26,13 @@ func (controllers *testing) PutTesting(c *fiber.Ctx) error {
 	// 		Errors: err.Error(),
 	// 	})
 	// }
-	form, err := utils.FF[models.User](c)
+	form, err := utils.FormDataParser[models.User](c)
 	if err != nil {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusBadRequest,
 			Errors: err.Error(),
 		})
 	}
-	log.Printf("%v", form)
 
 	file, err := c.FormFile("avatar")
 	if err == nil && file != nil {
@@ -56,9 +53,9 @@ func (controllers *testing) PutTesting(c *fiber.Ctx) error {
 	return utils.ResponseParser(c, utils.Response{
 		Code: fiber.StatusOK,
 		Data: fiber.Map{
-			// "name":      form.Name,
-			// "bio":       form.Bio,
-			// "email":     form.Email,
+			"name":      form.Name,
+			"bio":       form.Bio,
+			"email":     form.Email,
 			"file_name": file.Filename,
 		},
 	})

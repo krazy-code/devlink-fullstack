@@ -51,7 +51,7 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 func (q *UserQueries) GetUser(id uuid.UUID) (*models.UserDetail, error) {
 	query := `
 		SELECT t1.id, t1.name, t1.email, 
-		COALESCE(t2.github_url, ''), COALESCE(t2.bio, ''), COALESCE(t2.website_url, ''),
+		COALESCE(t2.github_url, ''), COALESCE(t1.bio, ''), COALESCE(t2.website_url, ''),
 		COALESCE(t2.linkedin_url, ''), COALESCE(t2.location, ''),
 		COALESCE(t1.avatar, ''), t1.created_at::text
 		FROM users as t1 
@@ -78,26 +78,26 @@ func (q *UserQueries) GetUser(id uuid.UUID) (*models.UserDetail, error) {
 	return user, nil
 }
 
-func (q *UserQueries) CreateUser(b *models.User) (int, error) {
+func (q *UserQueries) CreateUser(b *models.User) (uuid.UUID, error) {
 	query := `
-        INSERT INTO users (name, email, passwordhash)
+        INSERT INTO users (name, email, password_hash)
         VALUES ($1, $2, $3)
         RETURNING id
     `
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(b.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return 0, fmt.Errorf("failed to hash password")
+		return uuid.UUID{}, fmt.Errorf("failed to hash password")
 	}
 
-	var id int
+	var id uuid.UUID
 
 	if err := q.Pool.QueryRow(context.Background(), query, b.Name, b.Email, hashedPassword).Scan(&id); err != nil {
-		return 0, fmt.Errorf("error creating user: %w", err)
+		return uuid.UUID{}, fmt.Errorf("error creating user: %w", err)
 	}
 
 	fmt.Printf("Created user with ID: %d\n", id)
-	return id, nil
+	return uuid.UUID{}, nil
 }
 
 func (q *UserQueries) UpdateUser(id uuid.UUID, b *models.User) error {

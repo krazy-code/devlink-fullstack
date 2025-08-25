@@ -2,6 +2,7 @@ import CardMain from '@/components/card-main';
 import type { ProjectTypeItem } from '@/services/projects/projects.types';
 import { ActionIcon, Avatar, Badge, Group, Stack, Text } from '@mantine/core';
 import { IconMessage, IconThumbUp } from '@tabler/icons-react';
+import { Link } from '@tanstack/react-router';
 
 function ProjectItem({
   project,
@@ -24,9 +25,11 @@ function ProjectItem({
           <Avatar src={project.user_avatar || undefined} radius="xl" size={28}>
             {project.user_name?.[0]}
           </Avatar>
-          <Text size="sm" fw={500}>
-            {project.user_name}
-          </Text>
+          <Link to="/profile/$id" params={{ id: project.user_id }}>
+            <Text size="sm" fw={500}>
+              {project.user_name}
+            </Text>
+          </Link>
           <Text size="xs" c="dimmed">
             {project.created_at &&
               new Date(project.created_at).toLocaleDateString()}
