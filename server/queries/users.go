@@ -50,13 +50,13 @@ func (q *UserQueries) GetUsers() ([]models.User, error) {
 
 func (q *UserQueries) GetUser(id uuid.UUID) (*models.UserDetail, error) {
 	query := `
-        SELECT t1.id, t1.name, t1.email, 
-		t2.github_url, t2.bio, t2.website_url,
-		t2.linkedin_url, t2.location, t1.created_at::text
-        FROM users as t1 
-		INNER JOIN developers as t2 ON t2.user_id = t1.id
+		SELECT t1.id, t1.name, t1.email, 
+		COALESCE(t2.github_url, ''), COALESCE(t2.bio, ''), COALESCE(t2.website_url, ''),
+		COALESCE(t2.linkedin_url, ''), COALESCE(t2.location, ''), t1.created_at::text
+		FROM users as t1 
+		LEFT JOIN developers as t2 ON t2.user_id = t1.id
 		WHERE t1.id = $1
-    `
+	`
 
 	user := &models.UserDetail{}
 	err := q.Pool.QueryRow(context.Background(), query, id).Scan(

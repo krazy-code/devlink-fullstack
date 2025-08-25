@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Center,
   Group,
   LoadingOverlay,
   PasswordInput,
@@ -55,45 +56,47 @@ function AuthPage({ type = 'login' }: AuthPageProps) {
   return (
     <main>
       <LoadingOverlay visible={login.isPending || register.isPending} />
-      <Card withBorder p="md" shadow="md">
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stack>
-            <Title>{type.toUpperCase()}</Title>
-            {type === 'register' && (
+      <Center h="100vh">
+        <Card withBorder p="md" shadow="md">
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Stack>
+              <Title>{type.toUpperCase()}</Title>
+              {type === 'register' && (
+                <TextInput
+                  label="Name"
+                  placeholder="Insert Name"
+                  {...form.getInputProps('name')}
+                />
+              )}
               <TextInput
-                label="Name"
-                placeholder="Insert Name"
-                {...form.getInputProps('name')}
+                label="Email"
+                placeholder="Insert Email"
+                {...form.getInputProps('email')}
               />
-            )}
-            <TextInput
-              label="Email"
-              placeholder="Insert Email"
-              {...form.getInputProps('email')}
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Insert Password"
-              {...form.getInputProps('password')}
-            />
-            {type === 'register' && (
               <PasswordInput
-                label="Confirm Password"
-                placeholder="Insert Confirm Password"
-                {...form.getInputProps('confirm_password')}
+                label="Password"
+                placeholder="Insert Password"
+                {...form.getInputProps('password')}
               />
-            )}
-            <Button type="submit">Submit</Button>
-          </Stack>
-        </form>
-        <Space h={10} />
-        <Group>
-          <Text>Doesn't have account?</Text>
-          <Button component={Link} to="/register" variant="transparent">
-            Register
-          </Button>
-        </Group>
-      </Card>
+              {type === 'register' && (
+                <PasswordInput
+                  label="Confirm Password"
+                  placeholder="Insert Confirm Password"
+                  {...form.getInputProps('confirm_password')}
+                />
+              )}
+              <Button type="submit">Submit</Button>
+            </Stack>
+          </form>
+          <Space h={10} />
+          <Group>
+            <Text>Doesn't have account?</Text>
+            <Button component={Link} to="/register" variant="transparent">
+              Register
+            </Button>
+          </Group>
+        </Card>
+      </Center>
     </main>
   );
 }

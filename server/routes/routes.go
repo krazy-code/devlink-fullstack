@@ -23,6 +23,8 @@ func InitRouter(a *fiber.App) {
 	developerController := controllers.NewDeveloper(db)
 	userController := controllers.NewUser(db)
 	projectController := controllers.NewProject(db)
+	followController := controllers.NewFollowController(db)
+	testingController := controllers.NewTestingController(db)
 
 	api := a.Group("/api")
 
@@ -32,6 +34,8 @@ func InitRouter(a *fiber.App) {
 	authController.Route(v1)
 	developerController.Route(v1)
 	projectController.Route(v1)
+	followController.Route(v1)
+	testingController.Route(v1)
 
 	api.Get("/health", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "OK"})

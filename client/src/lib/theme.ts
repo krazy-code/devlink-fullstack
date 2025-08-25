@@ -17,6 +17,6 @@ export const defaultTheme = createTheme({
   defaultRadius: 'md',
 
   colors: {
-    primary: generateColors('#000000'),
+    primary: generateColors('#263b44'),
   },
 });

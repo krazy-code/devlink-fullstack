@@ -60,6 +60,7 @@ func (controllers *auth) PostLogin(c *fiber.Ctx) error {
 		return utils.ResponseParser(c, utils.Response{
 			Code:   fiber.StatusInternalServerError,
 			Errors: err.Error(),
+			Data:   userID,
 		})
 	}
 	claims := jwt.MapClaims{

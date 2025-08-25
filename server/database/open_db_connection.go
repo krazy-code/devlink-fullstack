@@ -10,6 +10,7 @@ type Queries struct {
 	*queries.DeveloperQueries
 	*queries.ProjectQueries
 	*queries.SkillQueries
+	*queries.FollowQueries
 }
 
 func OpenDBConnection() (*Queries, error) {
@@ -19,7 +20,7 @@ func OpenDBConnection() (*Queries, error) {
 	}
 
 	// ... (inside main or a function)
-	// sqlScript, err := os.ReadFile("database/migrations/001_init.sql")
+	// sqlScript, err := os.ReadFile("database/migrations/002_create_follows.sql")
 	// if err != nil {
 	// 	log.Fatalf("Unable to read init.sql: %v\n", err)
 	// }
@@ -41,6 +42,9 @@ func OpenDBConnection() (*Queries, error) {
 			Pool: pool,
 		},
 		SkillQueries: &queries.SkillQueries{
+			Pool: pool,
+		},
+		FollowQueries: &queries.FollowQueries{
 			Pool: pool,
 		},
 	}, nil

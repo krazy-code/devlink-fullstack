@@ -15,11 +15,14 @@ export interface GetProjectResItem {
 }
 
 export type ProjectFormBody = {
-  user_id: number;
-  bio: string;
-  github: string;
-  location: string;
-  website: string;
+  id: string;
+  user_id: string;
+  user_name: string;
+  title: string;
+  description: string;
+  tech_stacks: string;
+  project_url: string;
+  created_at: string;
 };
 export type LikeProjectBody = {
   action: 1 | 0;

@@ -5,11 +5,13 @@ import (
 )
 
 type User struct {
-	Id        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	CreatedAt any       `json:"createdat"`
+	Id        *uuid.UUID `json:"id"`
+	Name      *string    `json:"name"`
+	Email     *string    `json:"email"`
+	Password  *string    `json:"password"`
+	Bio       *string    `json:"bio"`
+	Avatar    *string    `json:"avatar"`
+	CreatedAt any        `json:"createdat"`
 }
 
 type UserDetail struct {

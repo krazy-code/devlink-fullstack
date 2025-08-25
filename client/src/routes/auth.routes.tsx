@@ -4,7 +4,7 @@ import { rootRoute } from './root-route';
 
 const loginPage = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/login',
+  path: '/auth',
   component: () => <AuthPage type="login" />,
 });
 

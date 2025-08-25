@@ -1,6 +1,6 @@
 import CardMain from '@/components/card-main';
 import type { ProjectTypeItem } from '@/services/projects/projects.types';
-import { ActionIcon, Box, Group, Stack, Text } from '@mantine/core';
+import { ActionIcon, Avatar, Badge, Group, Stack, Text } from '@mantine/core';
 import { IconMessage, IconThumbUp } from '@tabler/icons-react';
 
 function ProjectItem({
@@ -13,14 +13,40 @@ function ProjectItem({
   isLike: number;
 }) {
   return (
-    <CardMain>
+    <CardMain
+      style={{
+        border: '1px solid #e1e4e8',
+        boxShadow: '0 1px 3px rgba(27,31,35,0.04)',
+      }}
+    >
       <Stack>
         <Group gap={8}>
-          <Box w={20} h={20} bg="black" style={{ borderRadius: '100%' }}></Box>
-          <Text size="sm">{project.user_name}</Text>
+          <Avatar src={project.user_avatar || undefined} radius="xl" size={28}>
+            {project.user_name?.[0]}
+          </Avatar>
+          <Text size="sm" fw={500}>
+            {project.user_name}
+          </Text>
+          <Text size="xs" c="dimmed">
+            {project.created_at &&
+              new Date(project.created_at).toLocaleDateString()}
+          </Text>
         </Group>
-        <Text fw="bolder">{project.title}</Text>
-        <Text>{project.description}</Text>
+        <Text fw="bolder" size="lg">
+          {project.title}
+        </Text>
+        <Text size="sm" c="dimmed">
+          {project.description}
+        </Text>
+        {project.tags && (
+          <Group gap={4}>
+            {project.tags.map((tag: string) => (
+              <Badge key={tag} color="gray" variant="light">
+                {tag}
+              </Badge>
+            ))}
+          </Group>
+        )}
         <Group>
           <Group gap={2}>
             <ActionIcon
@@ -30,13 +56,13 @@ function ProjectItem({
             >
               <IconThumbUp />
             </ActionIcon>
-            <Text size="sm">21 Likes</Text>
+            <Text size="sm">{project.likes ?? 0} Likes</Text>
           </Group>
           <Group gap={2}>
             <ActionIcon variant="transparent" c="black">
               <IconMessage />
             </ActionIcon>
-            <Text size="sm">Reply</Text>
+            <Text size="sm">{project.comments ?? 0} Comments</Text>
           </Group>
         </Group>
       </Stack>

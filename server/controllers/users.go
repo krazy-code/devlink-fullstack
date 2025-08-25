@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/krazy-code/devlink/database"
@@ -118,12 +120,21 @@ func (controllers *user) UpdateUser(c *fiber.Ctx) error {
 	}
 
 	req := &models.User{}
-	if err := c.BodyParser(req); err != nil {
-		return utils.ResponseParser(c, utils.Response{
-			Code:   fiber.StatusBadRequest,
-			Errors: err.Error(),
-		})
+	file, err := c.FormFile("avatar")
+	if err == nil && file != nil {
+		// Save the file or process as needed
+		err = c.SaveFile(file, fmt.Sprintf("./uploads/%s", file.Filename))
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to save avatar"})
+		}
+		// Save file.Filename or path to DB as avatar
 	}
+	// if err := c.BodyParser(req); err != nil {
+	// 	return utils.ResponseParser(c, utils.Response{
+	// 		Code:   fiber.StatusBadRequest,
+	// 		Errors: err.Error(),
+	// 	})
+	// }
 
 	if err := controllers.queries.UpdateUser(foundedUser.Id, req); err != nil {
 		return utils.ResponseParser(c, utils.Response{
